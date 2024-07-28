@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "utils.h"
 
-// run command: gcc code.c -o code; .\code f1.txt f2.txt
+// run command:./main f1.txt f2.txt
 
 int main(int argc, char *argv[]) {
     int i = 0;

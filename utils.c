@@ -10,10 +10,10 @@ int countLetters(char *buf, FILE *f1, FILE *f2) {
         return 1;
     }
 
-    while (fgets(buf, sizeof(buf), f1) != NULL) {
+    while (fgets(buf, sizeof(char) * 50, f1) != NULL) {
         int i = 0;
         while ((c = buf[i]) != '\0') {
-            if (c == '\n' || (c == EOF && chrCounter != 0)) {
+            if (c == '\n') {
                 fprintf(f2, "%d\n", chrCounter);
                 chrCounter = 0;
             } else {
@@ -22,6 +22,13 @@ int countLetters(char *buf, FILE *f1, FILE *f2) {
             i++;
         }
     }
+
+    // If there is any remaining count, write it to the file
+    if (chrCounter > 0) {
+        fprintf(f2, "%d\n", chrCounter);
+    }
+
+    return 0;
 }
 
 int copyFiles(char *buf, FILE *f1, FILE *f2){
@@ -31,7 +38,7 @@ int copyFiles(char *buf, FILE *f1, FILE *f2){
         printf("something went wrong with the files, aborting. \n");
         return 1;
     }
-    while(fgets(buf, sizeof(buf), f1) != NULL) {
+    while(fgets(buf, sizeof(char) * 50, f1) != NULL) {
         i = 0;
         while((c = buf[i]) != '\0'){
             putc(buf[i], f2);
@@ -50,7 +57,7 @@ int pointToNextLine(FILE **p, char *buf){
         return 1;
     }
 
-    while(fgets(buf, sizeof(buf) - 1, p) != NULL){
+    while(fgets(buf, sizeof(char) * 50 - 1, *p) != NULL){
         i = 0;
         while((c = buf[i]) != '\0'){
             p++;
