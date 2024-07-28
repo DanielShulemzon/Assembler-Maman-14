@@ -1,5 +1,5 @@
 all: main.o utils.o
-	gcc -o main main.o utils.o -g
+	gcc -o main_exec main.o utils.o -g
  
 main.o: main.c
 	gcc -c main.c -g
