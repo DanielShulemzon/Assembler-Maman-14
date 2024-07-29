@@ -3,6 +3,8 @@
 
 #define raiseStrErr(string) fprintf(stderr, "something went wrong with \"%s\" bozo\n", string)
 
+#define MAX_LINE_CHARACTERS 80
+
 typedef enum boolean {
     false = 0, true = 1
 } bool;
@@ -25,3 +27,5 @@ typedef enum registers{
     r14,
     r15,
 }registers;
+
+int register_list[16] = {0};
