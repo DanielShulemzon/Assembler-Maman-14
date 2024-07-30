@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "globals.h"
 
-#define raiseStrErr(string) fprintf(stderr, "something went wrong with \"%s\" bozo\n", string)
+
 
 #define MAX_LINE_CHARACTERS 80
 

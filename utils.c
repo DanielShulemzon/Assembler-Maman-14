@@ -1,75 +1,21 @@
 #include "utils.h"
 
+#define raiseStrErr(string) fprintf(stderr, "Error: something went wrong with \"%s\" .\n", string)
+#define raiseFileErr(file_name) fprintf(stderr, "Error: something went wrong with the file \"%s\" .\n", file_name)
 
-int countLetters(char *buf, FILE *f1, FILE *f2) {
-    int chrCounter = 0;
-    char c;
 
-    if (f1 == NULL || f2 == NULL) {
-        printf("something went wrong with the files, aborting.\n");
-        return 1;
-    }
-
-    while (fgets(buf, sizeof(char) * 50, f1) != NULL) {
-        int i = 0;
-        while ((c = buf[i]) != '\0') {
-            if (c == '\n') {
-                fprintf(f2, "%d\n", chrCounter);
-                chrCounter = 0;
-            } else {
-                chrCounter++;
-            }
-            i++;
-        }
-    }
-
-    // If there is any remaining count, write it to the file
-    if (chrCounter > 0) {
-        fprintf(f2, "%d\n", chrCounter);
-    }
-
-    return 0;
+char *add_extention_to_string(char *s1, char *s2){
+	char *str = (char *)malloc_with_check(strlen(s1) + strlen(s2) + 1);
+	strcpy(str, s1);
+	strcat(str, s2);
+	return str;
 }
 
-int copyFiles(char *buf, FILE *f1, FILE *f2){
-    int i;
-    char c;
-    if(f1 == NULL || f2 == NULL){
-        printf("something went wrong with the files, aborting. \n");
-        return 1;
-    }
-    while(fgets(buf, sizeof(char) * 50, f1) != NULL) {
-        i = 0;
-        while((c = buf[i]) != '\0'){
-            putc(buf[i], f2);
-            i++;
-        }
-    }
-    return 0;
+void *malloc_with_check(long size){
+	void *ptr = malloc(size);
+	if (ptr == NULL) {
+		printf("Error: Fatal: Memory allocation failed.");
+		exit(1);
+	}
+	return ptr;
 }
-
-
-int pointToNextLine(FILE **p, char *buf){
-    int i;
-    char c;
-    if(p != NULL){
-        printf("something went wrong with the files, aborting. \n");
-        return 1;
-    }
-
-    while(fgets(buf, sizeof(char) * 50 - 1, *p) != NULL){
-        i = 0;
-        while((c = buf[i]) != '\0'){
-            p++;
-            if(c == '\n'){
-               return 0; 
-            }
-            i++;
-        }
-    }
-    
-}
-
-
-
-
