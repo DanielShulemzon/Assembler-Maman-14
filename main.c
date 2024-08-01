@@ -25,9 +25,8 @@ static bool process_file(char *filename){
     bool is_valid_file = true;
     int i;
     char c;
-    char *input_file_name;
-    FILE *input_file;
-    FILE *post_preprocessor_file;
+    char *input_file_name, target_name;
+    FILE *input_file, *target;
     
     
     input_file_name = add_extention_to_string(filename, ".as");
@@ -35,11 +34,13 @@ static bool process_file(char *filename){
     if(input_file == NULL){
         raiseFileErr(input_file);
         return false;
+        free(input_file_name); 
     }
 
     
     // initiating first check.
-    post_preprocessor_file = initate_pre_assembler(input_file);
+    target_name = add_extention_to_string(filename, ".am");
+    target = initate_pre_assembler(input_file, target);
     if(input_file == NULL){
         raiseFileErr(input_file);
         return false;
