@@ -16,5 +16,7 @@
 
 char *sum_strings(char *s1, char *s2);
 void *malloc_with_check(long size);
+void *realloc_with_check(void *ptr1, long size);\
+void remove_new_line(char *str);
 
 #endif

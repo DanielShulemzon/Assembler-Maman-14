@@ -5,7 +5,8 @@
 
 typedef struct Node {
     char *name;
-    FILE *file;
+    char **lines;
+    size_t line_count;
     struct Node *left;
     struct Node *right;
 } Node;
@@ -16,14 +17,15 @@ typedef struct {
 } BST;
 
 // Function prototypes
-Node* create_node(const char *name, FILE *file);
+Node* create_node(const char *name);
 void free_node(Node *node);
 
 BST* create_bst();
-void bst_insert(BST *bst, const char *name, FILE *file);
+void bst_insert(BST *bst, const char *name);
 Node* bst_search(BST *bst, const char *name);
 // void inorder_traversal(Node *node);
 void free_bst(BST *bst);
+void add_line(Node *node, const char *line);
 
 
 #endif

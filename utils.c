@@ -21,3 +21,20 @@ void *malloc_with_check(long size){
 	}
 	return ptr;
 }
+
+void *realloc_with_check(void *ptr1, long size){
+	void *ptr2 = realloc(ptr1, size);
+	if (ptr2 == NULL) {
+		printf("Error: Fatal: Memory allocation failed.");
+		exit(1);
+	}
+	return ptr2;
+}
+
+
+void remove_new_line(char *str) {
+    size_t len = strlen(str);
+	if(len > 0 && str[len - 1] != '\n')
+		return;
+	str[len - 1] = '\0';
+}
