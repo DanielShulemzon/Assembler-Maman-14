@@ -1,7 +1,9 @@
+#include "globals.h"
 #include "utils.h"
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
-#define raiseStrErr(string) fprintf(stderr, "Error: something went wrong with \"%s\" .\n", string)
-#define raiseFileErr(file_name) fprintf(stderr, "Error: something went wrong with the file \"%s\" .\n", file_name)
 
 
 char *sum_strings(char *s1, char *s2){

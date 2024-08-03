@@ -3,6 +3,8 @@
 
 #define MAX_LINE_LENGTH 80
 #define OP_NUM 16
+#define BUFFER_SIZE 256
+
 
 typedef enum booleans {
 	false = 0, true = 1
@@ -59,7 +61,7 @@ typedef struct operation{
 
 
 typedef struct line_info{
-	long line_number;
+	unsigned int line_number;
 	char *file_name;
 	char *content;
 } line_info;
