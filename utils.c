@@ -4,7 +4,7 @@
 #define raiseFileErr(file_name) fprintf(stderr, "Error: something went wrong with the file \"%s\" .\n", file_name)
 
 
-char *add_extention_to_string(char *s1, char *s2){
+char *sum_strings(char *s1, char *s2){
 	char *str = (char *)malloc_with_check(strlen(s1) + strlen(s2) + 1);
 	strcpy(str, s1);
 	strcat(str, s2);

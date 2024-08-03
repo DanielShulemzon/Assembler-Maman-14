@@ -29,7 +29,7 @@ static bool process_file(char *filename){
     FILE *input_file, *target;
     
     
-    input_file_name = add_extention_to_string(filename, ".as");
+    input_file_name = sum_strings(filename, ".as");
     input_file = fopen(input_file_name, "r");
     if(input_file == NULL){
         raiseFileErr(input_file);
@@ -38,13 +38,14 @@ static bool process_file(char *filename){
     }
 
     
-    // initiating first check.
-    target_name = add_extention_to_string(filename, ".am");
-    target = initate_pre_assembler(input_file, target);
-    if(input_file == NULL){
+    // initiating pre-assembler.
+    target_name = sum_strings(filename, ".am");
+    target = initiate_pre_assembler(input_file, target);
+    if(target == NULL){
         raiseFileErr(input_file);
         return false;
     }
+    fclose(input_file);
     
 
 

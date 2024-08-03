@@ -3,6 +3,6 @@
 
 #include <stdio.h>
 
-bool initate_pre_assembler(FILE *input_file, FILE *output_file);
+bool initiate_pre_assembler(FILE *input_file, FILE *output_file);
 
 #endif

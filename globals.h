@@ -1,15 +1,12 @@
 #ifndef _GLOBALS_H
 #define _GLOBALS_H
 
-#define HEAP_CAPACITY 64
 #define MAX_LINE_LENGTH 80
 #define OP_NUM 16
 
 typedef enum booleans {
 	false = 0, true = 1
 } bool;
-
-#define raiseStrErr(string) fprintf(stderr, "something went wrong with \"%s\" bozo\n", string)
 
 
 typedef enum registers{
@@ -25,23 +22,23 @@ typedef enum registers{
 }registers;
 
 
-typedef enum operations {
+typedef enum {
 	MOV_OP = 0,
 	CMP_OP = 1,
 
 	ADD_OP = 2,
-	SUB_OP = 2,
+	SUB_OP = 3,
 
 	LEA_OP = 4,
     //first operand group
 	CLR_OP = 5,
-	NOT_OP = 5,
-	INC_OP = 5,
-	DEC_OP = 5,
+	NOT_OP = 6,
+	INC_OP = 7,
+	DEC_OP = 8,
 
 	JMP_OP = 9,
-	BNE_OP = 9,
-	JSR_OP = 9,
+	BNE_OP = 10,
+	JSR_OP = 11,
     //second operand group
 	RED_OP = 12,
 	PRN_OP = 13,
@@ -51,7 +48,15 @@ typedef enum operations {
 
 	/** Failed/Error */
 	NONE_OP = -1
-} operations;
+} op_enum;
+
+typedef struct operation{
+	char *name;
+	op_enum op_number;
+
+}operation;
+
+
 
 typedef struct line_info{
 	long line_number;
