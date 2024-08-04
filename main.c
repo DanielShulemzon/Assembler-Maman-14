@@ -61,8 +61,15 @@ static bool process_file(char *filename){
     free(input_file_name);
     fclose(input_file);
     
+    // first run.
 
 
+
+
+
+
+
+    
 
 
 
