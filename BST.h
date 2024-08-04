@@ -21,7 +21,7 @@ Node* create_node(const char *name);
 void free_node(Node *node);
 
 BST* create_bst();
-void bst_insert(BST *bst, const char *name);
+Node* bst_insert(BST *bst, const char *name);
 Node* bst_search(BST *bst, const char *name);
 // void inorder_traversal(Node *node);
 void free_bst(BST *bst);

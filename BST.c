@@ -38,8 +38,9 @@ BST* create_bst() {
 }
 
 // Function to insert a node into the BST
-void bst_insert(BST *bst, const char *name) {
+Node* bst_insert(BST *bst, const char *name) {
     Node **current = &(bst->root);
+
     while (*current != NULL) {
         int cmp = strcmp(name, (*current)->name);
         if (cmp < 0) {
@@ -47,11 +48,12 @@ void bst_insert(BST *bst, const char *name) {
         } else if (cmp > 0) {
             current = &((*current)->right);
         } else {
-            // If the name already exists, return without doing anything
-            return;
+            // If the name already exists, return null
+            return NULL;
         }
     }
     *current = create_node(name);
+    return *current;
 }
 
 // Function to search for a node in the BST

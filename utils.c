@@ -16,7 +16,7 @@ char *sum_strings(char *s1, char *s2){
 void *malloc_with_check(long size){
 	void *ptr = malloc(size);
 	if (ptr == NULL) {
-		printf("Error: Fatal: Memory allocation failed.");
+		fprintf(stderr, "Error: Fatal: Memory allocation failed.");
 		exit(1);
 	}
 	return ptr;
@@ -25,7 +25,7 @@ void *malloc_with_check(long size){
 void *realloc_with_check(void *ptr1, long size){
 	void *ptr2 = realloc(ptr1, size);
 	if (ptr2 == NULL) {
-		printf("Error: Fatal: Memory allocation failed.");
+		fprintf(stderr, "Error: Fatal: Memory allocation failed.");
 		exit(1);
 	}
 	return ptr2;
