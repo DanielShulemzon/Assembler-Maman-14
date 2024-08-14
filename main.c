@@ -26,10 +26,12 @@ int main(int argc, char *argv[]) {
 static bool process_file(char *filename){
     bool is_valid_file = true;
     bool pre_assembler_succeeded;
+    long ic = IC_INIT_VALUE, dc = 0, icf, dcf;
     int i;
     char c;
     char *input_file_name, *target_name;
     FILE *input_file, *target;
+
     
     
     input_file_name = sum_strings(filename, ".as");
