@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "table.h"
 #include "utils.h"
 #include "globals.h"
 #include "pre_assembler.h"
+#include "first_pass.h"
 
 // run command:./main f1.txt f2.txt
 static bool process_file(char *filename);
@@ -24,13 +26,17 @@ int main(int argc, char *argv[]) {
 }
 
 static bool process_file(char *filename){
-    bool is_valid_file = true;
-    bool pre_assembler_succeeded;
+    bool pre_assembler_succeeded, is_success = true;
     long ic = IC_INIT_VALUE, dc = 0, icf, dcf;
-    int i;
+    int i, temp_c;
     char c;
     char *input_file_name, *target_name;
     FILE *input_file, *target;
+    line_info curr_line_info;
+    char temp_line[MAX_LINE_LENGTH + 2];
+    machine_word *code_img[CODE_ARR_IMG_LENGTH];
+    long data_img[CODE_ARR_IMG_LENGTH];
+    table *symbol_table;
 
     
     
@@ -53,7 +59,7 @@ static bool process_file(char *filename){
 
 
     // initiating pre-assembler.
-    pre_assembler_succeeded = initiate_pre_assembler(input_file, target);
+    pre_assembler_succeeded = initiate_pre_assembler(input_file, target, input_file_name);
     if(!pre_assembler_succeeded){
         if (remove(target_name) != 0) {
             perror("Error deleting file");
@@ -64,9 +70,26 @@ static bool process_file(char *filename){
     fclose(input_file);
     
     // first run.
+    //from now on use only target as file.
 
+    symbol_table = create_table(TABLE_INITIAL_CAPACITY); //initialing table capacity.
+     
+    curr_line_info.file_name = target_name;
+    curr_line_info.content = temp_line;
 
+    for(curr_line_info.line_number = 1; fgets(temp_line, MAX_LINE_LENGTH + 2, target) != NULL; curr_line_info.line_number++){
+        
+        if(strchr(curr_line_info.content, '\n') == NULL && !feof(target)){
+            printf_line_error(curr_line_info, "Line too long to process. Maximum line length should be %d.", MAX_LINE_LENGTH);
 
+            is_success == false;
+            while ((temp_c = fgetc(target)) != '\n' && temp_c != EOF); // skip leftovers.
+        }
+        else{
+            is_success &= fpass_process_line(curr_line_info, &ic, &dc, code_img, data_img, &symbol_table);
+            if(!is_success) icf = -1;
+        }
+    }
 
 
 

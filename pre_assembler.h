@@ -4,6 +4,6 @@
 #include <stdio.h>
 #include "globals.h"
 
-bool initiate_pre_assembler(FILE *input_file, FILE *output_file);
+bool initiate_pre_assembler(FILE *input_file, FILE *output_file, char *og_filename);
 
 #endif

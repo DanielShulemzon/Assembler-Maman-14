@@ -5,6 +5,8 @@
 #define OP_NUM 16
 #define BUFFER_SIZE 256
 #define IC_INIT_VALUE 100
+#define CODE_ARR_IMG_LENGTH 1200
+#define TABLE_INITIAL_CAPACITY 4
 
 
 typedef enum booleans {
@@ -35,7 +37,7 @@ typedef enum registers{
     r6,
     r7,
     NONE_REG = -1
-}registers;
+}reg;
 
 
 typedef enum {
@@ -64,14 +66,8 @@ typedef enum {
 
 	/** Failed/Error */
 	NONE_OP = -1
-} op_enum;
+} opcode;
 
-
-typedef struct operation{
-	char *name;
-	op_enum op_number;
-
-}operation;
 
 
 typedef struct code_word {
@@ -93,7 +89,7 @@ typedef struct data_word {
 	unsigned int ARE: 3;
 	/* The data content itself (a method for putting data into these field is defined) */
 	unsigned long data;
-} data_word;
+} data_word;  
 
 typedef struct machine_word {
 	/* if it represents code (not additional data), this field contains the total length required by the code. if it's data, this field is 0. */
