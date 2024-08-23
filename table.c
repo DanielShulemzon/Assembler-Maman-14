@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "table.h"
-#include "globals.h"
 #include "utils.h"
 
 
@@ -28,7 +27,7 @@ void add_table_item(table *tab, const char *key, long value, symbol_type type) {
     tab->entries[tab->size].key = strdup(key); // Allocate and copy the key string
     if (tab->entries[tab->size].key == NULL) {
         fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
+        exit(1);
     }
     tab->entries[tab->size].value = value;
     tab->entries[tab->size].type = type;
@@ -52,4 +51,19 @@ void free_table(table *tab) {
     }
     free(tab->entries); // Free the array of entries
     free(tab); // Free the table structure itself
+}
+
+
+bool key_exists_in_table(table *tab, const char *key) {
+    if (tab == NULL || key == NULL) {
+        return false; // Return false if table or key is NULL
+    }
+
+    for (size_t i = 0; i < tab->size; ++i) {
+        if (tab->entries[i].key != NULL && strcmp(tab->entries[i].key, key) == 0) {
+            return true; // Return true if key is found
+        }
+    }
+
+    return false; // Return false if key is not found
 }

@@ -98,3 +98,14 @@ bool is_reserved_word(const char *name){
 			strcmp(name, "endmacr") != 0;
 			
 }
+
+bool is_valid_data_parameter(const char *param){
+	int i;
+
+	if(param[0] == '+' || param[0] == '-') param++;
+
+	for(i = 0; param[i]; i++){
+		if(!isdigit(param[i])) return false;
+	}
+	return i > 0; // if param contains only a +/- sign then i will be equal to 0.
+}

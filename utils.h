@@ -23,6 +23,7 @@ int printf_line_error(line_info line, char *message, ...);
 instruction get_instruction_by_name(const char *word);
 bool is_valid_label_name(const char *name, line_info line);
 bool is_reserved_word(const char *name);
+bool is_valid_data_parameter(const char *param);
 
 
 

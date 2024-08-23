@@ -7,7 +7,6 @@
 #include "pre_assembler.h"
 #include "first_pass.h"
 
-// run command:./main f1.txt f2.txt
 static bool process_file(char *filename);
 
 
