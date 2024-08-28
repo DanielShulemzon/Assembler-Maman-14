@@ -40,9 +40,8 @@ bool handle_data_instruction(line_info line, long *dc, long *data_img){
 
     while(parameters[index] != '\n' && parameters[index] != EOF){
         for (i = 0;
-		      parameters[index] && parameters[index] != EOF && parameters[index] != '\t' &&
-		     parameters[index] != ' ' && parameters[index] != ',' &&
-		     parameters[index] != '\n'; index++, i++) {
+		      parameters[index] && !isspace(parameters[index]) &&
+		     parameters[index] != ','; index++, i++) {
 			temp_data[i] = parameters[index];
 		}
         temp_data[i] = '\0'; //end string

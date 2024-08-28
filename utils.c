@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include "utils.h"
-#include "opcode.h"
+#include "code.h"
 #include "instructions.h"
 
 
@@ -60,17 +60,17 @@ instruction get_instruction_by_name(const char *word){
 	return NONE_INST;
 }
 
-bool is_valid_label_name(const char *name, line_info line){ 
+bool is_valid_label_name(const char *name){ 
 	if(!name[0] || strlen(name) > 31){
-		printf_line_error(line, "illegal label name: lable name should be between 1-31 letters.");
+		printf("illegal label name: lable name should be between 1-31 letters. label given: %s", name);
 		return false;
 	} 
 	if(!(isalpha(name[0]) && is_alphanumeric(name + 1))){
-		printf_line_error(line, "illegal label name: first letter should be an alphabetic letter and other letters should be alphanumeric.");
+		printf("illegal label name: first letter should be an alphabetic letter and other letters should be alphanumeric. label given: %s", name);
 		return false;
 	}
 	if(is_reserved_word(name))
-		printf_line_error(line, "illegal label name: label name could not be a reserved word.");
+		printf("illegal label name: label name could not be a reserved word. label given: %s", name);
 		return false;
 	return true;
 }
