@@ -6,7 +6,7 @@
 #define BUFFER_SIZE 256
 #define IC_INIT_VALUE 100
 #define CODE_ARR_IMG_LENGTH 1200
-#define TABLE_INITIAL_CAPACITY 4
+#define TABLE_INITIAL_CAPACITY 8
 
 
 typedef enum booleans {
@@ -85,13 +85,22 @@ typedef struct data_word {
 	unsigned int ARE: 3;
 	/* The data content itself (a method for putting data into these field is defined) */
 	unsigned long data;
-} data_word;  
+} data_word;
+
+typedef struct register_word {
+	unsigned int ARE: 3;
+
+	unsigned int dest_register: 3;
+	unsigned int src_register: 3;
+
+} register_word;
 
 typedef struct machine_word {
 	/* if it represents code (not additional data), this field contains the total length required by the code. if it's data, this field is 0. */
 	short length;
 	/* The content can be code or data */
 	union word {
+		register_word *reg;
 		data_word *data;
 		code_word *code;
 	} word;

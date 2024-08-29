@@ -222,8 +222,8 @@ void get_available_addressing_types(opcode curr_opcode, bool *legal_src_addr_typ
 
 
 data_word *build_data_word(addressing_type addressing, long data, bool is_extern_symbol) {
-	unsigned long ARE = 4; /* 4 = 2^2 = 1 << 2  - IMMEDIATE_ADDR*/
-	data_word *dataword = malloc_with_check(sizeof(data_word));
+	unsigned long ARE = 4; /* 4 = 2^2 = 1 << 2  - IMMEDIATE_ADDR - only A is 1.*/
+	data_word *dataword = (data_word *) malloc_with_check(sizeof(data_word));
 
 	if (addressing == DIRECT_ADDR) {
 		ARE = is_extern_symbol ? 1 : 2;
@@ -232,4 +232,22 @@ data_word *build_data_word(addressing_type addressing, long data, bool is_extern
 	dataword->data = data; 
 
 	return dataword;
+}
+
+register_word *build_register_word(reg src_register, reg dest_register){
+    unsigned long ARE = 4; /* 4 = 2^2 = 1 << 2  - DIRECT_REGISTER_ADDR or INDIRECT_REGISTER_ADDR - only A is 1.*/
+    register_word *registerword = (register_word *) malloc_with_check(sizeof(register_word));
+    
+    registerword->src_register = 0;
+    registerword->dest_register = 0;
+
+    if(src_register != NONE_REG){
+        registerword->src_register = src_register;
+    }
+    if(dest_register != NONE_REG){
+        registerword->dest_register = dest_register;
+    }
+    registerword->ARE = ARE;
+
+    return registerword;
 }

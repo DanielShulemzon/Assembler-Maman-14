@@ -67,3 +67,32 @@ bool key_exists_in_table(table *tab, const char *key) {
 
     return false; // Return false if key is not found
 }
+
+void add_value_to_symbol_type(table *tab, long add_value, symbol_type type) {
+    int i;
+    if (tab == NULL) return;
+
+    for (i = 0; i < tab->size; i++) {
+        if (tab->entries[i].type == type) {
+            tab->entries[i].value += add_value;
+        }
+    }
+}
+
+table* filter_table_by_symbol_type(table *tab, symbol_type type) {
+    table *filtered_table;
+    int i;
+
+    if (tab == NULL) return NULL;
+
+    // Create a new table with an initial capacity equal to the original table's size.
+    filtered_table = create_table(TABLE_INITIAL_CAPACITY);
+
+    for (i = 0; i < tab->size; i++) {
+        if (tab->entries[i].type == type) {
+            add_table_item(filtered_table, tab->entries[i].key, tab->entries[i].value, type);
+        }
+    }
+
+    return filtered_table;
+}

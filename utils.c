@@ -61,21 +61,19 @@ instruction get_instruction_by_name(const char *word){
 }
 
 bool is_valid_label_name(const char *name){ 
+
 	if(!name[0] || strlen(name) > 31){
-		printf("illegal label name: lable name should be between 1-31 letters. label given: %s", name);
 		return false;
 	} 
 	if(!(isalpha(name[0]) && is_alphanumeric(name + 1))){
-		printf("illegal label name: first letter should be an alphabetic letter and other letters should be alphanumeric. label given: %s", name);
 		return false;
 	}
 	if(is_reserved_word(name))
-		printf("illegal label name: label name could not be a reserved word. label given: %s", name);
 		return false;
 	return true;
 }
 
-static bool is_alphanumberic(const char *name){
+static bool is_alphanumeric(const char *name){
 	int i = 0;
 	char ch;
 	

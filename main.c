@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
 
 static bool process_file(char *filename){
     bool pre_assembler_succeeded, is_success = true;
-    long ic = IC_INIT_VALUE, dc = 0, icf, dcf;
+    long ic = IC_INIT_VALUE, dc = 0, ic_final, dc_final;
     int i, temp_c;
     char c;
     char *input_file_name, *target_name;
@@ -69,7 +69,7 @@ static bool process_file(char *filename){
     fclose(input_file);
     
     // first run.
-    //from now on use only target as file.
+    //from now on we use only target as file.
 
     symbol_table = create_table(TABLE_INITIAL_CAPACITY); //initialing table capacity.
      
@@ -86,8 +86,28 @@ static bool process_file(char *filename){
         }
         else{
             is_success &= fpass_process_line(curr_line_info, &ic, &dc, code_img, data_img, &symbol_table);
-            if(!is_success) icf = -1;
         }
+    }
+
+    if(is_success){
+        
+        // save ic and dc.
+        ic_final = ic;
+        dc_final = dc;
+
+        add_value_to_symbol_type(symbol_table, ic_final, DATA_SYMBOL);
+
+        //start file from the begining
+        rewind(target);
+
+        
+
+
+        
+
+
+
+
     }
 
 
