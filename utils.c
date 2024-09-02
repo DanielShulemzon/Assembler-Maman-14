@@ -117,7 +117,7 @@ bool is_valid_data_parameter(const char *param){
 void free_code_image(machine_word **code_img, long ic_final) {
 	long i;
 	/* for each not-null cell (we might have some "holes", so we won't stop on first null) */
-	for (i = 0; i < ic_final; i++) {
+	for (i = 0; i <= ic_final; i++) {
 		machine_word *curr_word = code_img[i];
 		if (curr_word != NULL) {
 			/* free code/data/reg word */
