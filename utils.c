@@ -118,11 +118,11 @@ void free_code_image(machine_word **code_image, long ic_final) {
 			if (curr_word->length > 0) {
 				free(curr_word->word.code);
 			}
-			else if(curr_word->word.data != NULL) {
-				free(curr_word->word.data);
-			}
-			else{
+			else if(curr_word->word.reg != NULL) {
 				free(curr_word->word.reg);
+			}
+			else{ //only option left is data
+				free(curr_word->word.data);
 			}
 			free(curr_word);
 			code_image[i] = NULL;

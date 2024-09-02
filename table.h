@@ -28,12 +28,12 @@ typedef struct {
     size_t capacity;
 } table;
 
-table* create_table(size_t initial_capacity);
+table *create_table(size_t initial_capacity);
 void add_table_item(table *tab, const char *key, long value, symbol_type type);
 table_entry *find_by_types(table *tab, const char *key, int symbol_count, ...);
 void free_table(table *tab);
 void add_value_to_symbol_type(table *tab, long add_value, symbol_type type);
-table* filter_table_by_types(table *tab, int symbol_count, ...);
+table *filter_table_by_type(table *tab, symbol_type type);
 
 
 #endif

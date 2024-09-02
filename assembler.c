@@ -7,6 +7,7 @@
 #include "pre_assembler.h"
 #include "first_pass.h"
 #include "second_pass.h"
+#include "write_files.h"
 
 static bool process_file(char *filename);
 
@@ -43,7 +44,7 @@ static bool process_file(char *filename){
     input_file_name = sum_strings(filename, ".as");
     input_file = fopen(input_file_name, "r");
     if(input_file == NULL){
-        fprintf(stderr, "Error: something went wrong with the file \"%s\" .\n", input_file_name);
+        fprintf(stderr, "Error opening file  \"%s\" .\n", input_file_name);
         free(input_file_name); 
         return false;
     }
@@ -52,7 +53,7 @@ static bool process_file(char *filename){
     target_name = sum_strings(filename, ".am");
     target = fopen(target_name, "w");
     if(target == NULL){
-        fprintf(stderr, "Error: something went wrong with the file \"%s\" .\n", target_name);
+        fprintf(stderr, "Error opening file  \"%s\" .\n", target_name);
         free(target_name); 
         return false;
     }
@@ -69,7 +70,7 @@ static bool process_file(char *filename){
     free(input_file_name);
     fclose(input_file);
     
-    // first run.
+    // first_pass.
     //from now on we use only target as file.
 
     symbol_table = create_table(TABLE_INITIAL_CAPACITY); //initialing table capacity.
@@ -90,6 +91,7 @@ static bool process_file(char *filename){
         }
     }
 
+    //if first_pass was success, we move on to second_pass. else we go free the memory.
     if(is_success){
         
         // save ic and dc.
@@ -108,7 +110,7 @@ static bool process_file(char *filename){
         }
 
         if(is_success){
-            //create files.
+            is_success = write_output_files(code_img, data_img, ic_final, dc_final, filename, symbol_table);
         }
     }
 

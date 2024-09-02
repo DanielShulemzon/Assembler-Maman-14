@@ -92,10 +92,11 @@ void add_value_to_symbol_type(table *tab, long add_value, symbol_type type) {
     }
 }
 
-table* filter_table_by_types(table *tab, int symbol_count, ...) {
-    int i, j;
-    if (tab == NULL || symbol_count <= 0) {
-        return NULL; // Return NULL if table is NULL or symbol_count is invalid
+table *filter_table_by_type(table *tab, symbol_type type) {
+    int i;
+
+    if (tab == NULL) {
+        return NULL; // Return NULL if table is NULL
     }
 
     table *filtered_table = create_table(tab->capacity); // Create a new table
@@ -103,26 +104,12 @@ table* filter_table_by_types(table *tab, int symbol_count, ...) {
         return NULL; // Return NULL if table creation fails
     }
 
-    va_list arglist;
-    symbol_type *valid_symbol_types = malloc_with_check(symbol_count * sizeof(symbol_type));
-
-    // Initialize the variable argument list
-    va_start(arglist, symbol_count);
-    for (int i = 0; i < symbol_count; i++) {
-        valid_symbol_types[i] = va_arg(arglist, symbol_type);
-    }
-    va_end(arglist);
-
     // Iterate over the table entries
     for (i = 0; i < tab->size; i++) {
-        for (j = 0; j < symbol_count; j++) {
-            if (tab->entries[i].type == valid_symbol_types[j]) {
-                add_table_item(filtered_table, tab->entries[i].key, tab->entries[i].value, tab->entries[i].type);
-                break; // No need to check other types if one matches
-            }
+        if (tab->entries[i].type == type) {
+            add_table_item(filtered_table, tab->entries[i].key, tab->entries[i].value, tab->entries[i].type);
         }
     }
 
-    free(valid_symbol_types); // Free allocated memory
     return filtered_table;
 }
