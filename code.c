@@ -56,7 +56,7 @@ bool extract_operands(line_info line, int index, int *operand_count, char **oper
     char *temp_operand;
     int i;
 
-    *operand_count = 0;
+    (*operand_count) = 0;
 
     SKIP_WHITE_SPACES(line.content, index);
     if(line.content[index] = ','){
@@ -65,7 +65,7 @@ bool extract_operands(line_info line, int index, int *operand_count, char **oper
     }
 
     while(line.content[index] != '\n' && line.content[index] != EOF){
-        if(*operand_count == 2){
+        if((*operand_count) == 2){
             printf_line_error(line, "more than 2 arguements given to opcode.");
             return false;
         }
@@ -78,7 +78,7 @@ bool extract_operands(line_info line, int index, int *operand_count, char **oper
 		}
         temp_operand[i] = '\0';
         
-        strcpy(operands[*operand_count], temp_operand);
+        strcpy(operands[(*operand_count)], temp_operand);
         
         SKIP_WHITE_SPACES(line.content, index);
         if(!line.content[index] || line.content[index] == '\n' || line.content[index] == EOF){

@@ -107,3 +107,25 @@ bool is_valid_data_parameter(const char *param){
 	}
 	return i > 0; // if param contains only a +/- sign then i will be equal to 0.
 }
+
+void free_code_image(machine_word **code_image, long ic_final) {
+	long i;
+	/* for each not-null cell (we might have some "holes", so we won't stop on first null) */
+	for (i = 0; i < ic_final; i++) {
+		machine_word *curr_word = code_image[i];
+		if (curr_word != NULL) {
+			/* free code/data/reg word */
+			if (curr_word->length > 0) {
+				free(curr_word->word.code);
+			}
+			else if(curr_word->word.data != NULL) {
+				free(curr_word->word.data);
+			}
+			else{
+				free(curr_word->word.reg);
+			}
+			free(curr_word);
+			code_image[i] = NULL;
+		}
+	}
+}

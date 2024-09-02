@@ -4,7 +4,6 @@
 #include <ctype.h>
 #include "first_pass.h"
 #include "utils.h"
-#include "globals.h"
 #include "instructions.h"
 #include "code.h"
 
@@ -47,6 +46,7 @@ bool fpass_process_line(line_info line, machine_word **code_img, long *data_img,
     }
 
     if(key_exists_in_table(symbol_table, symbol)){
+        //at this point .entry instructions are not in the table yet.
         printf_line_error(line, "label name already exists.");
         return false;
     } 
@@ -71,7 +71,7 @@ bool fpass_process_line(line_info line, machine_word **code_img, long *data_img,
                 printf_line_error(line, "illegal label name.");
                 return false;
             }
-            if(!key_exists_in_table(symbol_table, symbol)){
+            if(find_by_types(symbol_table, symbol, 3, CODE_SYMBOL, DATA_SYMBOL, EXTERNAL_SYMBOL)){
                 printf_line_error(line, "label name already exists.");
                 return false;
             }
@@ -81,6 +81,9 @@ bool fpass_process_line(line_info line, machine_word **code_img, long *data_img,
 
             add_table_item(symbol_table, symbol, 0, EXTERNAL_SYMBOL); /* Extern value is defaulted to 0 */
             return true;
+        }
+        if(inst = ENTRY_INST && label_found){
+            printf("Warning at %s:%ld: label defined with .entry instruction is meaningless.", line.file_name, line.line_number);
         }
     }
     else{ //only option left to check is a command
@@ -130,6 +133,8 @@ bool handle_code_line(line_info line, long *ic, machine_word **code_img){
 		build_extra_codewords_fpass(code_img, ic, operands, op_count);
 	}
 
+    (*ic)++;
+
     code_img[ic_before - IC_INIT_VALUE]->length = (*ic) - ic_before;
 
 	return true; /* No errors */
@@ -178,6 +183,7 @@ static void build_extra_codewords_fpass(machine_word **code_img, long *ic, char 
 
         code_img[(*ic) - IC_INIT_VALUE] = word_to_write;
     }
+    //first operand done, now check if there's a second operand and process it.
 
     if(second_addressing == NONE_ADDR){
         return;

@@ -30,11 +30,10 @@ typedef struct {
 
 table* create_table(size_t initial_capacity);
 void add_table_item(table *tab, const char *key, long value, symbol_type type);
-table_entry* find_table_item(table *tab, const char *key);
+table_entry *find_by_types(table *tab, const char *key, int symbol_count, ...);
 void free_table(table *tab);
-bool key_exists_in_table(table *tab, const char *key);
 void add_value_to_symbol_type(table *tab, long add_value, symbol_type type);
-table* filter_table_by_symbol_type(table *tab, symbol_type type);
+table* filter_table_by_types(table *tab, int symbol_count, ...);
 
 
 #endif

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 #include "table.h"
 #include "utils.h"
 
@@ -35,38 +36,50 @@ void add_table_item(table *tab, const char *key, long value, symbol_type type) {
 }
 
 // Function to find an entry in the table by key
-table_entry* find_table_item(table *tab, const char *key) {
-    for (size_t i = 0; i < tab->size; i++) {
-        if (strcmp(tab->entries[i].key, key) == 0) {
-            return &tab->entries[i];
+
+table_entry *find_by_types(table *tab, const char *key, int symbol_count, ...) {
+    int i, j;
+    if (tab == NULL || key == NULL || symbol_count <= 0) {
+        return NULL; // Return NULL if table, key is NULL, or symbol_count is invalid
+    }
+
+    va_list arglist;
+    symbol_type *valid_symbol_types = malloc(symbol_count * sizeof(symbol_type));
+    if (valid_symbol_types == NULL) {
+        return NULL; // Return NULL if memory allocation fails
+    }
+
+    // Initialize the variable argument list
+    va_start(arglist, symbol_count);
+    for (i = 0; i < symbol_count; i++) {
+        valid_symbol_types[i] = va_arg(arglist, symbol_type);
+    }
+    va_end(arglist);
+
+    // Iterate over the table entries
+    for (i = 0; i < tab->size; i++) {
+        for (j = 0; j < symbol_count; j++) {
+            if (tab->entries[i].key != NULL && strcmp(tab->entries[i].key, key) == 0 &&
+                tab->entries[i].type == valid_symbol_types[j]) {
+                free(valid_symbol_types); // Free allocated memory
+                return &tab->entries[i];  // Return the matching entry
+            }
         }
     }
-    return NULL; // Return NULL if the key is not found
+
+    free(valid_symbol_types); // Free allocated memory
+    return NULL; // Return NULL if no matching entry is found
 }
 
 // Function to free all memory associated with the table
 void free_table(table *tab) {
-    for (size_t i = 0; i < tab->size; i++) {
+    for (int i = 0; i < tab->size; i++) {
         free(tab->entries[i].key); // Free each key string
     }
     free(tab->entries); // Free the array of entries
     free(tab); // Free the table structure itself
 }
 
-
-bool key_exists_in_table(table *tab, const char *key) {
-    if (tab == NULL || key == NULL) {
-        return false; // Return false if table or key is NULL
-    }
-
-    for (size_t i = 0; i < tab->size; ++i) {
-        if (tab->entries[i].key != NULL && strcmp(tab->entries[i].key, key) == 0) {
-            return true; // Return true if key is found
-        }
-    }
-
-    return false; // Return false if key is not found
-}
 
 void add_value_to_symbol_type(table *tab, long add_value, symbol_type type) {
     int i;
@@ -79,20 +92,37 @@ void add_value_to_symbol_type(table *tab, long add_value, symbol_type type) {
     }
 }
 
-table* filter_table_by_symbol_type(table *tab, symbol_type type) {
-    table *filtered_table;
-    int i;
+table* filter_table_by_types(table *tab, int symbol_count, ...) {
+    int i, j;
+    if (tab == NULL || symbol_count <= 0) {
+        return NULL; // Return NULL if table is NULL or symbol_count is invalid
+    }
 
-    if (tab == NULL) return NULL;
+    table *filtered_table = create_table(tab->capacity); // Create a new table
+    if (filtered_table == NULL) {
+        return NULL; // Return NULL if table creation fails
+    }
 
-    // Create a new table with an initial capacity equal to the original table's size.
-    filtered_table = create_table(TABLE_INITIAL_CAPACITY);
+    va_list arglist;
+    symbol_type *valid_symbol_types = malloc_with_check(symbol_count * sizeof(symbol_type));
 
+    // Initialize the variable argument list
+    va_start(arglist, symbol_count);
+    for (int i = 0; i < symbol_count; i++) {
+        valid_symbol_types[i] = va_arg(arglist, symbol_type);
+    }
+    va_end(arglist);
+
+    // Iterate over the table entries
     for (i = 0; i < tab->size; i++) {
-        if (tab->entries[i].type == type) {
-            add_table_item(filtered_table, tab->entries[i].key, tab->entries[i].value, type);
+        for (j = 0; j < symbol_count; j++) {
+            if (tab->entries[i].type == valid_symbol_types[j]) {
+                add_table_item(filtered_table, tab->entries[i].key, tab->entries[i].value, tab->entries[i].type);
+                break; // No need to check other types if one matches
+            }
         }
     }
 
+    free(valid_symbol_types); // Free allocated memory
     return filtered_table;
 }

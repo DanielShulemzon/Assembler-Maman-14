@@ -6,7 +6,7 @@
 #include "table.h"
 
 
-bool spass_process_line(line_info line, machine_word **code_img, long *data_img, long *ic, long *dc, table *symbol_table);
+bool spass_process_line(line_info line, machine_word **code_img, long *ic, table *symbol_table);
 
 
 
