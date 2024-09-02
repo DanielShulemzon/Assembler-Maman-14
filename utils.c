@@ -114,11 +114,11 @@ bool is_valid_data_parameter(const char *param){
 	return i > 0; /* returns false if param is either empty or only a +/- sign*/
 }
 
-void free_code_image(machine_word **code_image, long ic_final) {
+void free_code_image(machine_word **code_img, long ic_final) {
 	long i;
 	/* for each not-null cell (we might have some "holes", so we won't stop on first null) */
 	for (i = 0; i < ic_final; i++) {
-		machine_word *curr_word = code_image[i];
+		machine_word *curr_word = code_img[i];
 		if (curr_word != NULL) {
 			/* free code/data/reg word */
 			if (curr_word->type == CODE_UNION_TYPE) {
@@ -131,7 +131,7 @@ void free_code_image(machine_word **code_image, long ic_final) {
 				free(curr_word->word.data);
 			}
 			free(curr_word);
-			code_image[i] = NULL;
+			code_img[i] = NULL;
 		}
 	}
 }

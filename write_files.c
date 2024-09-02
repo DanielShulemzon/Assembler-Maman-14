@@ -45,16 +45,13 @@ static bool write_ob_file(machine_word **code_img, long *data_img, long ic_final
         if(code_img[i]->type == CODE_UNION_TYPE){
             value = (code_img[i]->word.code->opcode << 11) | (code_img[i]->word.code->src_addressing << 7) |
                     (code_img[i]->word.code->dest_addressing << 3) | (code_img[i]->word.code->ARE);
-            printf("entered print code with ic of: %d \n", i + 100);
         }
         else if(code_img[i]->type == REG_UNION_TYPE){
             value = (code_img[i]->word.reg->src_register << 6) | (code_img[i]->word.reg->dest_register << 3) |
                     (code_img[i]->word.reg->ARE);
-            printf("entered print reg with ic of: %d \n", i + 100);
         }
         else{ /* only option left is data. */
             value = (KEEP_ONLY_12_LSB(code_img[i]->word.data->data) << 3) | (code_img[i]->word.data->ARE);
-            printf("entered print data with ic of: %d \n", i + 100);
         }
 
         /* print at least 4 digits of ic, and 5 digits of octal */

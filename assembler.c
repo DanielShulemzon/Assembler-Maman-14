@@ -16,11 +16,10 @@ int main(int argc, char *argv[]) {
     int i;
     bool succeeded = true;
 
+    /*process files by args */
     for(i = 1; i < argc && succeeded; ++i){
-
-        succeeded = process_file(argv[i]);
-        if(succeeded) printf("great success\n");
-        else printf("the test is aladeen\n");
+        
+        succeeded = process_file(argv[i]); /* send the file for full processing. */
     }
     return 0;
 }
@@ -41,7 +40,7 @@ static bool process_file(char *filename){
     input_file_name = sum_strings(filename, ".as");
     input_file = fopen(input_file_name, "r");
     if(input_file == NULL){
-        fprintf(stderr, "Error opening file  \"%s\" .\n", input_file_name);
+        fprintf(stderr, "Error reading file \"%s\". skipping it. \n", input_file_name);
         free(input_file_name); 
         return false;
     }
@@ -120,6 +119,7 @@ static bool process_file(char *filename){
 
     free_table(symbol_table);
 
+    free_code_image(code_img, ic_final);
     
     return is_success;
 }

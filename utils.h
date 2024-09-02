@@ -23,7 +23,7 @@ instruction get_instruction_by_name(const char *word);
 bool is_valid_label_name(const char *name);
 bool is_reserved_word(const char *name);
 bool is_valid_data_parameter(const char *param);
-void free_code_image(machine_word **code_image, long fic);
+void free_code_image(machine_word **code_img, long ic_final);
 
 
 
