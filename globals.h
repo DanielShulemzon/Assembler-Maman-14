@@ -15,15 +15,15 @@ typedef enum booleans {
 
 
 typedef enum addressing_types {
-	/** Immediate addressing (0) */
+	/* Immediate addressing (0) */
 	IMMEDIATE_ADDR = 0,
-	/** Direct addressing (1) */
+	/* Direct addressing (1) */
 	DIRECT_ADDR = 1,
-	/** Relative addressing (2) */
+	/* Relative addressing (2) */
 	INDIRECT_REGISTER_ADDR = 2,
-	/** Register addressing */
+	/* Register addressing */
 	DIRECT_REGISTER_ADDR = 3,
-	/** Failed/Not detected addressing */
+	/* Failed/Not detected addressing */
 	NONE_ADDR = -1
 } addressing_type;
 
@@ -41,6 +41,7 @@ typedef enum registers{
 
 
 typedef enum {
+    /* first operand group */
 	MOV_OP = 0,
 	CMP_OP = 1,
 
@@ -48,7 +49,7 @@ typedef enum {
 	SUB_OP = 3,
 
 	LEA_OP = 4,
-    //first operand group
+    /* second operand group */
 	CLR_OP = 5,
 	NOT_OP = 6,
 	INC_OP = 7,
@@ -56,15 +57,14 @@ typedef enum {
 
 	JMP_OP = 9,
 	BNE_OP = 10,
-	JSR_OP = 11,
-    //second operand group
-	RED_OP = 12,
-	PRN_OP = 13,
-
+	RED_OP = 11,
+	PRN_OP = 12,
+	JSR_OP = 13,
+    /* third operand group */
 	RTS_OP = 14,
 	STOP_OP = 15,
 
-	/** Failed/Error */
+	/* Failed/Error */
 	NONE_OP = -1
 } opcode;
 
@@ -83,7 +83,7 @@ typedef struct code_word {
 
 typedef struct data_word {
 	unsigned int ARE: 3;
-	/* The data content itself (a method for putting data into these field is defined) */
+	/* The data content itself */
 	unsigned long data;
 } data_word;
 
@@ -95,29 +95,37 @@ typedef struct register_word {
 
 } register_word;
 
+typedef enum {
+    CODE_UNION_TYPE,
+    DATA_UNION_TYPE,
+    REG_UNION_TYPE
+} union_type;
+
 typedef struct machine_word {
-	/* if it represents code (not additional data), this field contains the total length required by the code. if it's data, this field is 0. */
+	/* if it represents code (not additional data), this field contains the total length required by the code. if it's either data or reg, this field is 0. */
 	short length;
-	/* The content can be code or data */
+	/* The content can be code/data/reg */
 	union word {
 		register_word *reg;
 		data_word *data;
 		code_word *code;
 	} word;
+
+	union_type type;
 } machine_word;
 
 typedef enum instruction {
-	/** .data instruction */
+	/* .data instruction */
 	DATA_INST,
-	/** .extern instruction */
+	/* .extern instruction */
 	EXTERN_INST,
-	/** .entry instruction */
+	/* .entry instruction */
 	ENTRY_INST,
-	/** .string instruction */
+	/* .string instruction */
 	STRING_INST,
-	/** Not found */
+	/* Not found */
 	NONE_INST,
-	/** Parsing/syntax error */
+	/* Parsing/syntax error */
 	ERROR_INST
 } instruction;
 

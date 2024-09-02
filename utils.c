@@ -7,7 +7,7 @@
 #include "instructions.h"
 
 
-static bool is_alphanumberic(const char *name);
+static bool is_alphanumeric(const char *name);
 
 char *sum_strings(char *s1, char *s2){
 	char *str = (char *)malloc_with_check(strlen(s1) + strlen(s2) + 1);
@@ -39,7 +39,7 @@ int printf_line_error(line_info line, char *message, ...) { /* Prints the errors
 	int result;
 	va_list args; /* for formatting */
 	/* Print file+line */
-	fprintf(stderr,"Error In %s:%ld: ", line.file_name, line.line_number);
+	fprintf(stderr,"Error In %s:%u: ", line.file_name, line.line_number);
 
 	/* use vprintf to call printf from variable argument function (from stdio.h) with message + format */
 	va_start(args, message);
@@ -52,13 +52,19 @@ int printf_line_error(line_info line, char *message, ...) { /* Prints the errors
 
 
 instruction get_instruction_by_name(const char *word){
-	//ensured word does not point at NULL.
-	if(strcmp(word, "data")) return DATA_INST;
-	if(strcmp(word, "string")) return STRING_INST;
-	if(strcmp(word, "extern")) return EXTERN_INST;
-	if(strcmp(word, "entry")) return ENTRY_INST;
+	if(word == NULL) return NONE_INST;
+
+	if(strcmp(word, "data") == 0) return DATA_INST;
+
+	if(strcmp(word, "string") == 0) return STRING_INST;
+
+	if(strcmp(word, "extern") == 0) return EXTERN_INST;
+
+	if(strcmp(word, "entry") == 0) return ENTRY_INST;
+
 	return NONE_INST;
 }
+
 
 bool is_valid_label_name(const char *name){ 
 
@@ -105,7 +111,7 @@ bool is_valid_data_parameter(const char *param){
 	for(i = 0; param[i]; i++){
 		if(!isdigit(param[i])) return false;
 	}
-	return i > 0; // if param contains only a +/- sign then i will be equal to 0.
+	return i > 0; /* returns false if param is either empty or only a +/- sign*/
 }
 
 void free_code_image(machine_word **code_image, long ic_final) {
@@ -115,13 +121,13 @@ void free_code_image(machine_word **code_image, long ic_final) {
 		machine_word *curr_word = code_image[i];
 		if (curr_word != NULL) {
 			/* free code/data/reg word */
-			if (curr_word->length > 0) {
+			if (curr_word->type == CODE_UNION_TYPE) {
 				free(curr_word->word.code);
 			}
-			else if(curr_word->word.reg != NULL) {
+			else if(curr_word->type == REG_UNION_TYPE) {
 				free(curr_word->word.reg);
 			}
-			else{ //only option left is data
+			else{ /* only option left is data */
 				free(curr_word->word.data);
 			}
 			free(curr_word);

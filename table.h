@@ -1,5 +1,5 @@
-#ifndef TABLE_H
-#define TABLE_H
+#ifndef _TABLE_H
+#define _TABLE_H
 
 #include <stdlib.h>
 #include "globals.h"

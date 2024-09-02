@@ -1,5 +1,5 @@
-#ifndef _SECOND_PASS_
-#define _SECOND_PASS_
+#ifndef _SECOND_PASS_H
+#define _SECOND_PASS_H
 
 #include <stdio.h>
 #include "globals.h"

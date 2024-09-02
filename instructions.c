@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "utils.h"
 #include "instructions.h"
 
@@ -17,7 +18,7 @@ instruction get_instruction_from_word(const char *word){
 
     if(result != NONE_INST) return result;
 
-    return ERROR_INST; //'.' is mentioned but instruction name is illegal.
+    return ERROR_INST; /* '.' is mentioned but instruction name is illegal. */
 }
 
 bool handle_data_instruction(line_info line, long *dc, long *data_img){
@@ -26,14 +27,14 @@ bool handle_data_instruction(line_info line, long *dc, long *data_img){
     int i, index = 0;
 
     parameters = strstr(line.content, ".data");
-    if(parameters = NULL){
-        printf_line_errorl(line, ".data not found although entered function.");
+    if(parameters == NULL){
+        printf_line_error(line, ".data not found although entered function.");
         exit(1);
     }
     parameters += strlen(".data");
 
     SKIP_WHITE_SPACES(parameters, index);
-    if(parameters[index] = ','){
+    if(parameters[index] == ','){
         printf_line_error(line, "unexpected comma after .data instruction.");
         return false;
     }
@@ -44,27 +45,27 @@ bool handle_data_instruction(line_info line, long *dc, long *data_img){
 		     parameters[index] != ','; index++, i++) {
 			temp_data[i] = parameters[index];
 		}
-        temp_data[i] = '\0'; //end string
+        temp_data[i] = '\0'; /* end string */
 
         if(!is_valid_data_parameter(temp_data)){
             printf_line_error(line, "parameter at .data must be an integer.");
             return false;
         }
 
-        current_data_value = strtol(temp_data, temp_ptr, 10);
+        current_data_value = strtol(temp_data, &temp_ptr, 10);
 
         data_img[*dc] = current_data_value;
         (*dc)++;
 
         SKIP_WHITE_SPACES(parameters, index);
         if(!parameters[index] || parameters[index] == '\n' || parameters[index] == EOF){
-            break; //end of line. ran successfuly
+            break; /* end of line. ran successfuly */
         }
-        if(parameters[index] = ','){
+        if(parameters[index] == ','){
             index++;
             SKIP_WHITE_SPACES(parameters, index);
 
-            if(parameters[index] = ","){
+            if(parameters[index] == ','){
                 printf_line_error(line, "multiple commas in a row.");
                 return false;
             }
@@ -83,24 +84,24 @@ bool handle_data_instruction(line_info line, long *dc, long *data_img){
 
 
 bool handle_string_instruction(line_info line, long *dc, long *data_img){
-    char *arg, temp_c, *temp_ptr;
+    char *arg, temp_c;
     int index = 0;
 
     arg = strstr(line.content, ".string");
-    if(arg = NULL){
-        printf_line_errorl(line, ".string not found although entered function.");
-        exit(1);
+    if(arg == NULL){
+        printf_line_error(line, ".string not found.");
+        return false;
     }
     arg += strlen(".string");
 
     SKIP_WHITE_SPACES(arg, index);
-    if(arg[index] != "\""){
+    if(arg[index] != '\"'){
         printf_line_error(line, "missing opening quote.");
         return false;
     }
     index++;
 
-    while((temp_c = arg[index]) != "\""){
+    while((temp_c = arg[index]) != '\"'){
         if(!temp_c || temp_c == ' ' || temp_c == '\n'){
             printf_line_error(line, "missing ending quote.");
             return false;
@@ -111,11 +112,11 @@ bool handle_string_instruction(line_info line, long *dc, long *data_img){
 
         index++;
     }
-    //add \0 a the end of the string
+    /* add \0 a the end of the string */
     data_img[*dc] = 0;
     (*dc)++;
 
-    //check if more than one arguement was given
+    /* check if more than one arguement was given */
     index++;
     SKIP_WHITE_SPACES(arg, index);
     if(arg[index] != ' ' && arg[index] != '\n'){

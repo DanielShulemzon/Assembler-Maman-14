@@ -1,5 +1,5 @@
-#ifndef _INSTUCTIONS_H_
-#define _INSTUCTIONS_H_
+#ifndef _INSTUCTIONS_H
+#define _INSTUCTIONS_H
 #include "globals.h"
 
 

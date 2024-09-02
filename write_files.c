@@ -4,7 +4,8 @@
 #include "utils.h"
 #include "write_files.h"
 
-
+static bool write_ob_file(machine_word **code_img, long *data_img, long ic_final, long dc_final, char *filename);
+static bool write_table_to_file(table *tab, char *filename, char *file_extension);
 
 bool write_output_files(machine_word **code_img, long *data_img, long ic_final, long dc_final, char *filename,
                        table *symbol_table){
@@ -16,7 +17,7 @@ bool write_output_files(machine_word **code_img, long *data_img, long ic_final, 
              write_table_to_file(externals, filename, ".ext") &&
 	         write_table_to_file(entries, filename, ".ent");
     
-    //free the tables.
+    /* free the tables. */
     free_table(externals);
     free_table(entries);
     return result;
@@ -37,29 +38,32 @@ static bool write_ob_file(machine_word **code_img, long *data_img, long ic_final
         return false;
     }
 
-    fprintf(ob_file, "\t%ld\t%ld", ic_final - IC_INIT_VALUE, dc_final);
+    fprintf(ob_file, " %ld %ld", ic_final - IC_INIT_VALUE, dc_final);
 
-    //loop through the code_img array when ic_final - IC_INIT_VALUE is the last index in the image that we filled.
+    /* loop through the code_img array when ic_final - IC_INIT_VALUE is the last index in the image that we filled. */
     for(i = 0; i < ic_final - IC_INIT_VALUE; i++){
-        if(code_img[i]->length > 0){
+        if(code_img[i]->type == CODE_UNION_TYPE){
             value = (code_img[i]->word.code->opcode << 11) | (code_img[i]->word.code->src_addressing << 7) |
                     (code_img[i]->word.code->dest_addressing << 3) | (code_img[i]->word.code->ARE);
+            printf("entered print code with ic of: %d \n", i + 100);
         }
-        else if(code_img[i]->word.reg != NULL){
+        else if(code_img[i]->type == REG_UNION_TYPE){
             value = (code_img[i]->word.reg->src_register << 6) | (code_img[i]->word.reg->dest_register << 3) |
                     (code_img[i]->word.reg->ARE);
+            printf("entered print reg with ic of: %d \n", i + 100);
         }
-        else{ //only option left is data.
-            value = KEEP_ONLY_12_LSB(code_img[i]->word.data->data << 3) | (code_img[i]->word.data->ARE);
+        else{ /* only option left is data. */
+            value = (KEEP_ONLY_12_LSB(code_img[i]->word.data->data) << 3) | (code_img[i]->word.data->ARE);
+            printf("entered print data with ic of: %d \n", i + 100);
         }
 
         /* print at least 4 digits of ic, and 5 digits of octal */
-        fprintf(ob_file, "\n%.4ld %.5lo", i + 100, value);
+        fprintf(ob_file, "\n%.4d %.5lo", i + 100, value);
     }
 
-    //print the data image.
+    /* print the data image. */
     for (i = 0; i < dc_final; i++) {
-		/* print only lower 24 bytes */
+		/* print only lower 15 bytes */
 		value = KEEP_ONLY_15_LSB(data_img[i]);
 		/* print at least 4 digits of dc, and 5 digits of octal */
 		fprintf(ob_file, "\n%.4ld %.5lo", ic_final + i, value);
@@ -76,10 +80,10 @@ static bool write_table_to_file(table *tab, char *filename, char *file_extension
     char *output_filename = sum_strings(filename, file_extension);
     int i;
 
-    if(tab == NULL){
+    if(tab->size == 0){
         return true;
     }
-    //if table contains at least one entry we create the file.
+    /* if table contains at least one entry we create the file. */
 
     dest_file = fopen(output_filename, "w");
     if(dest_file == NULL){
@@ -88,7 +92,8 @@ static bool write_table_to_file(table *tab, char *filename, char *file_extension
         return false;
     }
 
-    //print the first line outside of the loop to avoid unwanted \n.
+
+    /* print the first line outside of the loop to avoid unwanted \n. */
     fprintf(dest_file, "%s %.4ld", tab->entries[0].key, tab->entries[0].value);
     for(i = 1; i < tab->size; i++){
         fprintf(dest_file, "\n%s %.4ld", tab->entries[i].key, tab->entries[i].value);
