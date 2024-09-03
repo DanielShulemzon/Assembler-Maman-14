@@ -22,8 +22,8 @@ int main(int argc, char *argv[]) {
     bool succeeded = true;
 
     /*process files by args */
-    for(i = 1; i < argc && succeeded; ++i){
-        
+    for(i = 1; i < argc; ++i){
+        if(!succeeded) printf("\n"); /* if last test failed, skip a line.*/
         succeeded = process_file(argv[i]); /* send the file for full processing. */
     }
     return 0;
