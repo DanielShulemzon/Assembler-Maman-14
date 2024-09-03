@@ -6,8 +6,12 @@
 #include "code.h"
 #include "instructions.h"
 
-
-static bool is_alphanumeric(const char *name);
+/*
+ *  Checks if name is alphanumeric.
+ *  @param word - the word we want to check.
+ *  @return - whether it is alphanumeric.
+ */
+static bool is_alphanumeric(const char *word);
 
 char *sum_strings(char *s1, char *s2){
 	char *str = (char *)malloc_with_check(strlen(s1) + strlen(s2) + 1);
@@ -68,22 +72,22 @@ instruction get_instruction_by_name(const char *word){
 
 bool is_valid_label_name(const char *name){ 
 
-	if(!name[0] || strlen(name) > 31){
+	if(!name[0] || strlen(name) > 31){ /* label name must be between 1 and 31 characters. */
 		return false;
 	} 
-	if(!(isalpha(name[0]) && is_alphanumeric(name + 1))){
+	if(!(isalpha(name[0]) && is_alphanumeric(name + 1))){ /* label name must start in a character and the rest must be either a character or a nubmer.*/
 		return false;
 	}
-	if(is_reserved_word(name))
+	if(is_reserved_word(name)) /* label name could not be a reserved word.*/
 		return false;
 	return true;
 }
 
-static bool is_alphanumeric(const char *name){
+static bool is_alphanumeric(const char *word){
 	int i = 0;
 	char ch;
 	
-	for(i = 0;(ch = name[i]) != '\0' ; i++){
+	for(i = 0;(ch = word[i]) != '\0' ; i++){
 		if(!(isalpha(ch) || isdigit(ch))) return false;
 	}
 
@@ -92,11 +96,9 @@ static bool is_alphanumeric(const char *name){
 
 
 bool is_reserved_word(const char *name){
-	opcode tmp_opcode = get_opcode_by_name(name);
-	reg tmp_reg = get_register_by_name(name);
 
-	return tmp_opcode != NONE_OP &&
-			tmp_reg != NONE_REG &&
+	return get_opcode_by_name(name) != NONE_OP &&
+			get_register_by_name(name) != NONE_REG &&
 			get_instruction_from_word(name) != NONE_INST &&
 			strcmp(name, "macro") != 0 &&
 			strcmp(name, "endmacr") != 0;

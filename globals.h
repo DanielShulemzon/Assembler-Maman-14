@@ -1,11 +1,15 @@
+/* file that contains global variables and values.*/
 #ifndef _GLOBALS_H
 #define _GLOBALS_H
 
 #define MAX_LINE_LENGTH 80
-#define OP_NUM 16
+
 #define BUFFER_SIZE 256
+
 #define IC_INIT_VALUE 100
+
 #define CODE_ARR_IMG_LENGTH 1200
+
 #define TABLE_INITIAL_CAPACITY 8
 
 
@@ -71,30 +75,34 @@ typedef enum {
 
 
 typedef struct code_word {
+	/* ARE field.*/
 	unsigned int ARE: 3;
-	
+	/* destination and source addressing types.*/
 	unsigned int dest_addressing: 4;
 	unsigned int src_addressing: 4;
-	
+	/* opcode number. */
 	unsigned int opcode: 4;
 
 } code_word;
 
 
 typedef struct data_word {
+	/* ARE field. */
 	unsigned int ARE: 3;
-	/* The data content itself */
+	/* The data content itself. */
 	unsigned long data;
 } data_word;
 
 typedef struct register_word {
+	/* ARE field. */
 	unsigned int ARE: 3;
-
+	/* destination and source registers (if exist)*/
 	unsigned int dest_register: 3;
 	unsigned int src_register: 3;
 
 } register_word;
 
+/* union to track which type of word is in the machine_word. */
 typedef enum {
     CODE_UNION_TYPE,
     DATA_UNION_TYPE,
@@ -111,7 +119,7 @@ typedef struct machine_word {
 		code_word *code;
 	} word;
 
-	union_type type;
+	union_type type; /* type of the union. */
 } machine_word;
 
 typedef enum instruction {
@@ -129,9 +137,13 @@ typedef enum instruction {
 	ERROR_INST
 } instruction;
 
+/* structure that contains info about a line.*/
 typedef struct line_info{
+	/* number of current line. */
 	unsigned int line_number;
+	/* the name of the file. */
 	char *file_name;
+	/* the line itself. */
 	char *content;
 } line_info;
 
