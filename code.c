@@ -173,11 +173,19 @@ static bool validate_opcode_with_operands(line_info line, opcode curr_opcode, ad
             return false;
         }
         if(src_addressing != NONE_ADDR && !legal_src_addr_types[src_addressing]){
-            printf_line_error(line, "illegal addressing type for first operand");
+            printf_line_error(line, "illegal addressing type for operand.");
+            return false;
+        }
+        if(src_addressing == NONE_ADDR){
+            printf_line_error(line, "first operand is illegal.");
             return false;
         }
         if(dest_addressing != NONE_ADDR && !legal_dest_addr_types[dest_addressing]){
             printf_line_error(line, "illegal addressing type for second operand.");
+            return false;
+        }
+        if(dest_addressing == NONE_ADDR){
+            printf_line_error(line, "second operand is illegal.");
             return false;
         }
         return true;
@@ -190,6 +198,10 @@ static bool validate_opcode_with_operands(line_info line, opcode curr_opcode, ad
         }
         if(dest_addressing != NONE_ADDR && !legal_dest_addr_types[dest_addressing]){
             printf_line_error(line, "illegal addressing type for operand");
+            return false;
+        }
+        if(dest_addressing == NONE_ADDR){
+            printf_line_error(line, "operand is illegal.");
             return false;
         }
         return true;

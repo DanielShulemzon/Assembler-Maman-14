@@ -94,7 +94,6 @@ static bool process_file(char *filename){
         /* save ic and dc. */
         ic_final = ic;
         dc_final = dc;
-        printf("final ic is: %ld, final dc is: %ld\n", ic, dc);
 
         ic = IC_INIT_VALUE;
 

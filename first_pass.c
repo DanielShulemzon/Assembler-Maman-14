@@ -8,7 +8,7 @@
 #include "code.h"
 
 static bool handle_code_line(line_info line, long *ic, machine_word **code_img, bool label_found);
-static bool fpass_build_extra_codewords(line_info line, machine_word **code_img, long *ic, char operands[2][MAX_LINE_LENGTH], int op_count);
+static void fpass_build_extra_codewords(line_info line, machine_word **code_img, long *ic, char operands[2][MAX_LINE_LENGTH], int op_count);
 static void fpass_build_word_from_dest_operand(line_info line, machine_word **code_img, long *ic, char *operand, addressing_type addr);
 static void fpass_build_word_from_src_operand(line_info line, machine_word **code_img, long *ic, char *operand, addressing_type addr);\
 static reg get_register_by_addr(const char *operand, addressing_type addressing);
@@ -46,13 +46,14 @@ bool fpass_process_line(line_info line, machine_word **code_img, long *data_img,
         }
         first_word = strtok(NULL, " \t\n");
         
+        if(find_by_types(symbol_table, symbol, 3, CODE_SYMBOL, DATA_SYMBOL, EXTERNAL_SYMBOL)){
+            printf_line_error(line, "label name already exists.");
+            return false;
+        } 
+
         label_found = true;
     }
 
-    if(find_by_types(symbol_table, symbol, 3, CODE_SYMBOL, DATA_SYMBOL, EXTERNAL_SYMBOL)){
-        printf_line_error(line, "label name already exists.");
-        return false;
-    } 
 
     inst = get_instruction_from_word(first_word);
     if(inst == ERROR_INST){
@@ -72,8 +73,9 @@ bool fpass_process_line(line_info line, machine_word **code_img, long *data_img,
         }
         if(inst == EXTERN_INST){
             token = strtok(NULL, " \t\n");
+            strcpy(symbol, token);
 
-            if(!is_valid_label_name(token)){
+            if(!is_valid_label_name(symbol)){
                 printf_line_error(line, "label name %s is illegal.", symbol);
                 return false;
             }
@@ -106,7 +108,6 @@ static bool handle_code_line(line_info line, long *ic, machine_word **code_img, 
     long ic_before;
     int op_count, index = 0, i;
     machine_word *word_to_write;
-    bool line_valid = true;
 
     if(label_found){
         SKIP_WHITE_SPACES(line.content, index);
@@ -149,18 +150,18 @@ static bool handle_code_line(line_info line, long *ic, machine_word **code_img, 
 	code_img[(*ic) - IC_INIT_VALUE] = word_to_write;
 
     if (op_count) { /* If there's at least 1 operand */
-		line_valid = fpass_build_extra_codewords(line, code_img, ic, operands, op_count);
+		fpass_build_extra_codewords(line, code_img, ic, operands, op_count);
 	}
 
     (*ic)++;
 
     code_img[ic_before - IC_INIT_VALUE]->length = (*ic) - ic_before;
 
-	return line_valid; /* line_valid is initiallized to true but if any operand is illegal it would be false. */
+	return true; /* line_valid is initiallized to true but if any operand is illegal it would be false. */
 }
 
 
-static bool fpass_build_extra_codewords(line_info line, machine_word **code_img, long *ic, char operands[2][MAX_LINE_LENGTH], int op_count) {
+static void fpass_build_extra_codewords(line_info line, machine_word **code_img, long *ic, char operands[2][MAX_LINE_LENGTH], int op_count) {
 	machine_word *word_to_write;
     addressing_type dest_addressing = NONE_ADDR, src_addressing = NONE_ADDR;
     reg src_reg, dest_reg;
@@ -189,20 +190,15 @@ static bool fpass_build_extra_codewords(line_info line, machine_word **code_img,
         word_to_write->type = REG_UNION_TYPE;
 
         code_img[(*ic) - IC_INIT_VALUE] = word_to_write;
-        return true;
+        return;
     }
 
     /* handle each operand seperately. starting with first operand. */
-    if(dest_addressing == NONE_ADDR){
-        if(operands[0][0] != '\0'){
-            printf_line_error(line, "operand %s is not a valid operand.", operands[0]);
-            return false;
-        }
-        return true;
-    }
 
     (*ic)++;
 
+    /*if the opcode recieves two operands, the first operand will be source operand and the second will be destination operand. 
+        but if the opcode recieves one operand it will only be destination operand. */
     if(op_count == 2)
         fpass_build_word_from_src_operand(line, code_img, ic, operands[0], src_addressing);
     else
@@ -211,19 +207,13 @@ static bool fpass_build_extra_codewords(line_info line, machine_word **code_img,
     
     /* first operand done, now check if there's a second operand and process it. */
 
-    if(src_addressing == NONE_ADDR){
-        if(operands[1][0] != '\0'){
-            printf_line_error(line, "operand %s is not a valid operand.", operands[1]);
-            return false;
-        }
-        return true;
-    }
+    if(op_count == 1) return;
 
     (*ic)++;
     
     fpass_build_word_from_dest_operand(line, code_img, ic, operands[1], dest_addressing);
 
-    return true;
+    return;
 }
 
 static void fpass_build_word_from_dest_operand(line_info line, machine_word **code_img, long *ic, char *operand, addressing_type addr){
