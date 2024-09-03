@@ -41,7 +41,7 @@ bool fpass_process_line(line_info line, machine_word **code_img, long *data_img,
         strcpy(symbol, first_word);
 
         if (!is_valid_label_name(symbol)) {
-            printf_line_error(line, "illegal label name.");
+            printf_line_error(line, "label name \"%s\" is illegal.", symbol);
             return false;
         }
         first_word = strtok(NULL, " \t\n");
@@ -72,10 +72,9 @@ bool fpass_process_line(line_info line, machine_word **code_img, long *data_img,
         }
         if(inst == EXTERN_INST){
             token = strtok(NULL, " \t\n");
-            strcpy(symbol, token);
 
-            if(!is_valid_label_name(symbol)){
-                printf_line_error(line, "illegal label name.");
+            if(!is_valid_label_name(token)){
+                printf_line_error(line, "label name %s is illegal.", symbol);
                 return false;
             }
             if(find_by_types(symbol_table, symbol, 3, CODE_SYMBOL, DATA_SYMBOL, EXTERNAL_SYMBOL)){
