@@ -1,0 +1,81 @@
+Error In fpass_errors.am:3: label name "LABEL" already exists.
+Error In fpass_errors.am:6: label name "jsr" is illegal.
+Error In fpass_errors.am:7: label name "endmacr" is illegal.
+Error In fpass_errors.am:8: label name "myMacro" is an already defined macro name.
+Error In fpass_errors.am:9: label name already exists.
+Error In fpass_errors.am:10: No arguements were given to .extern instruction. 
+Error In fpass_errors.am:11: label name ILL@EGAL_LABEL is illegal.
+Error In fpass_errors.am:13: label name ToooooooooooooooooooooooLongggggggLabelllllllllll is illegal.
+Error In fpass_errors.am:14: label name "SOMELABEL" already exists.
+Error In fpass_errors.am:15: label name "VERY_VERY_VERY_VERY_VERY_LONG_LABEL_DEFINITION_SO_ITS_ILLEGAL" is illegal.
+Error In fpass_errors.am:16: label name "*INVALID&CHARS%" is illegal.
+Error In fpass_errors.am:17: label name "5StartsWithNum" is illegal.
+Error In fpass_errors.am:18: missing ending quote.
+Error In fpass_errors.am:19: missing opening quote.
+Error In fpass_errors.am:20: missing opening quote.
+Error In fpass_errors.am:21: unexpected comma after .data instruction.
+Error In fpass_errors.am:22: multiple commas in a row.
+Error In fpass_errors.am:23: multiple commas in a row.
+Error In fpass_errors.am:24: line could not end with a comma.
+Error In fpass_errors.am:25: 2 arguments without comma between them.
+Error In fpass_errors.am:26: 2 arguments without comma between them.
+Error In fpass_errors.am:27: 2 arguments without comma between them.
+Error In fpass_errors.am:28: parameter at .data must be an integer.
+Error In fpass_errors.am:29: parameter at .data must be an integer.
+Error In fpass_errors.am:30: parameter at .data must be an integer.
+Error In fpass_errors.am:31: parameter at .data must be an integer.
+Error In fpass_errors.am:32: illegal number of operands given to opcode. required: 2. found: 0
+Error In fpass_errors.am:33: illegal number of operands given to opcode. required: 2. found: 1
+Error In fpass_errors.am:34: more than 2 arguements given to opcode.
+Error In fpass_errors.am:35: illegal number of operands given to opcode. required: 2. found: 0
+Error In fpass_errors.am:36: illegal number of operands given to opcode. required: 2. found: 1
+Error In fpass_errors.am:37: more than 2 arguements given to opcode.
+Error In fpass_errors.am:38: illegal number of operands given to opcode. required: 2. found: 0
+Error In fpass_errors.am:39: illegal number of operands given to opcode. required: 2. found: 1
+Error In fpass_errors.am:40: more than 2 arguements given to opcode.
+Error In fpass_errors.am:41: illegal number of operands given to opcode. required: 2. found: 0
+Error In fpass_errors.am:42: illegal number of operands given to opcode. required: 2. found: 1
+Error In fpass_errors.am:43: more than 2 arguements given to opcode.
+Error In fpass_errors.am:44: illegal number of operands given to opcode. required: 2. found: 0
+Error In fpass_errors.am:45: illegal number of operands given to opcode. required: 2. found: 1
+Error In fpass_errors.am:47: illegal number of operands given to opcode. required: 1. found: 0
+Error In fpass_errors.am:48: illegal number of operands given to opcode. required: 1. found: 2
+Error In fpass_errors.am:49: illegal number of operands given to opcode. required: 1. found: 0
+Error In fpass_errors.am:50: illegal number of operands given to opcode. required: 1. found: 2
+Error In fpass_errors.am:51: illegal number of operands given to opcode. required: 1. found: 0
+Error In fpass_errors.am:52: more than 2 arguements given to opcode.
+Error In fpass_errors.am:53: illegal number of operands given to opcode. required: 1. found: 0
+Error In fpass_errors.am:54: illegal number of operands given to opcode. required: 1. found: 2
+Error In fpass_errors.am:55: illegal number of operands given to opcode. required: 1. found: 0
+Error In fpass_errors.am:56: illegal number of operands given to opcode. required: 1. found: 2
+Error In fpass_errors.am:57: illegal number of operands given to opcode. required: 1. found: 0
+Error In fpass_errors.am:58: illegal number of operands given to opcode. required: 1. found: 2
+Error In fpass_errors.am:59: illegal number of operands given to opcode. required: 1. found: 2
+Error In fpass_errors.am:60: illegal number of operands given to opcode. required: 1. found: 0
+Error In fpass_errors.am:61: illegal number of operands given to opcode. required: 1. found: 0
+Error In fpass_errors.am:62: illegal number of operands given to opcode. required: 1. found: 2
+Error In fpass_errors.am:63: more than 2 arguements given to opcode.
+Error In fpass_errors.am:64: illegal number of operands given to opcode. required: 1. found: 0
+Error In fpass_errors.am:65: illegal number of operands given to opcode. required: 1. found: 2
+Error In fpass_errors.am:66: illegal number of operands given to opcode. required: 0. found: 1
+Error In fpass_errors.am:67: illegal number of operands given to opcode. required: 0. found: 2
+Error In fpass_errors.am:68: illegal number of operands given to opcode. required: 0. found: 1
+Error In fpass_errors.am:69: illegal number of operands given to opcode. required: 0. found: 2
+Error In fpass_errors.am:70: illegal addressing type for second operand.
+Error In fpass_errors.am:71: illegal addressing type for second operand.
+Error In fpass_errors.am:72: illegal addressing type for second operand.
+Error In fpass_errors.am:73: illegal addressing type for second operand.
+Error In fpass_errors.am:74: illegal addressing type for operand.
+Error In fpass_errors.am:75: illegal addressing type for operand.
+Error In fpass_errors.am:76: illegal addressing type for operand.
+Error In fpass_errors.am:77: illegal addressing type for operand
+Error In fpass_errors.am:78: illegal addressing type for operand
+Error In fpass_errors.am:79: illegal addressing type for operand
+Error In fpass_errors.am:80: illegal addressing type for operand
+Error In fpass_errors.am:81: illegal addressing type for operand
+Error In fpass_errors.am:82: illegal addressing type for operand
+Error In fpass_errors.am:83: illegal addressing type for operand
+Error In fpass_errors.am:84: illegal addressing type for operand
+Error In fpass_errors.am:85: illegal addressing type for operand
+Error In fpass_errors.am:86: illegal addressing type for operand
+Error In fpass_errors.am:87: illegal addressing type for operand

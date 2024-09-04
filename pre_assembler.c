@@ -3,7 +3,6 @@
 #include <ctype.h>
 #include "pre_assembler.h"
 #include "globals.h"
-#include "BST.h"
 #include "utils.h"
 
 
@@ -13,7 +12,7 @@
  *  @param macro_bst - binary search tree that contains all macros.
  *  @return Whether macro line is legal.
  */
-static bool is_macr_legal(line_info line, BST * macro_bst);
+static bool is_macr_legal(line_info line, BST *macro_bst);
 
 
 /*
@@ -30,8 +29,7 @@ static bool pre_assembler_succeeded;
 
 static const char macro_keyword[] = "macr", endmacro_keyword[] = "endmacr";
 
-bool initiate_pre_assembler(FILE *input_file, FILE *output_file, char *filename){
-    BST *macro_bst = create_bst(); /* initiates binary search tree. */
+bool initiate_pre_assembler(FILE *input_file, FILE *output_file, char *filename, BST *macro_bst){
     char temp_line[MAX_LINE_LENGTH + 2], tokenized_line[MAX_LINE_LENGTH + 2];
     char *first_word, *macro_name;
     line_info curr_line_info;
@@ -49,6 +47,10 @@ bool initiate_pre_assembler(FILE *input_file, FILE *output_file, char *filename)
         strcpy(tokenized_line, temp_line);
 
         first_word = strtok(tokenized_line, " \t\n"); /* gets the first word in the line*/
+        
+        if(first_word == NULL || first_word[0] == EOF || first_word[0] == ';'){ /* empty line - skip it. */
+            continue;
+        }
 
         if (strcmp(first_word, macro_keyword) == 0){ /* if first word is the definition of a macro.*/
 
@@ -79,7 +81,7 @@ bool initiate_pre_assembler(FILE *input_file, FILE *output_file, char *filename)
         }
 
         if(inside_macro){ /* if found 'macr' and didn't find 'endmacr yet we add the line to the current macro.*/
-            add_line(curr_macro, curr_line_info.content);
+            add_line(curr_macro, temp_line);
             continue;
         }
 
@@ -92,7 +94,6 @@ bool initiate_pre_assembler(FILE *input_file, FILE *output_file, char *filename)
         fprintf(output_file, "%s", temp_line); /*if it's a regular line we copy it to the dest file. */
 
     }
-    free_bst(macro_bst); /* free allocated space */
     
     return pre_assembler_succeeded;
 }
@@ -135,7 +136,7 @@ static bool is_macr_legal(line_info line, BST * macro_bst){
 
 static void extract_macro_from_node(Node *node, FILE *dest){
     int i;
-
+    
     /*loops through all the lines inside the node and prints them to the destination file.*/
     for(i = 0; i < node->line_count; i++){
         if (fprintf(dest, "%s", node->lines[i]) < 0) {

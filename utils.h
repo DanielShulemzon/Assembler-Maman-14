@@ -6,7 +6,7 @@
 #include "globals.h"
 
 /* macro to increment an index until it points to either a character or the end of the line/file. */
-#define MOVE_TO_NOT_WHITE(string, index) \
+#define SKIP_WHITE_SPACES(string, index) \
         for (;string[(index)] && (string[(index)] == '\t' || string[(index)] == ' '); (++(index)))\
         ;
 

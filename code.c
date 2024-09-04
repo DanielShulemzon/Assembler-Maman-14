@@ -56,6 +56,10 @@ static cmd_element cmd_lookup_table[] = {
 opcode get_opcode_by_name(const char *name){
     cmd_element *e;
     
+    if (name == NULL) {
+        return NONE_OP;  /* Handle the case where name is NULL */
+    }
+
     /* loops through the lookup table and searches for the opreand. if found, returns the corresponding enum. */
     for(e = cmd_lookup_table; e->cmd != NULL; e++){
         if(strcmp(name, e->cmd) == 0) return e->op;
@@ -216,7 +220,7 @@ static bool validate_opcode_with_operands(line_info line, opcode curr_opcode, ad
         }
         return true;
     }
-    if(curr_opcode >= CLR_OP && curr_opcode <= PRN_OP){
+    if(curr_opcode >= CLR_OP && curr_opcode <= JSR_OP){
         /* 1 operand required. */
         if(op_count != 1){
             printf_line_error(line, "illegal number of operands given to opcode. required: 1. found: %d", op_count);

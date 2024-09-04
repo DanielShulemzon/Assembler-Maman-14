@@ -33,8 +33,8 @@ static bool spass_process_operands(line_info line, long *curr_ic, char operands[
 
 
 
-bool spass_process_line(line_info line, machine_word **code_img, long *ic, table *symbol_table){
-    char tokenized_line[MAX_LINE_LENGTH + 2];
+bool spass_process_line(line_info line, machine_word **code_img, long *ic, table *symbol_table, BST *macro_bst){
+    char tokenized_line[MAX_LINE_LENGTH + 2], symbol[MAX_LINE_LENGTH] = {0};
     char *first_word, *token;
     int length;
     instruction inst;
@@ -45,7 +45,7 @@ bool spass_process_line(line_info line, machine_word **code_img, long *ic, table
 
     first_word = strtok(tokenized_line, " \t\n"); /* discluding label. */
 
-    if(first_word == NULL || first_word[0] == '\n' || first_word[0] == EOF || first_word[0] == ';'){
+    if(first_word == NULL|| first_word[0] == EOF || first_word[0] == ';'){
         /* the line is empty or a comment */
         return true;
     }
@@ -69,33 +69,46 @@ bool spass_process_line(line_info line, machine_word **code_img, long *ic, table
         }
 
         token = strtok(NULL, " \t\n"); /* get the label's name. */
-        if (token == NULL) {
-            printf_line_error(line, "You have to specify a label name for .entry instruction.");
+        if(token == NULL){
+            printf_line_error(line, "No arguements were given to .entry instruction. ");
+            return false;
+        }
+        strcpy(symbol, token); /* get label name provided */
+
+        if(strtok(NULL, " \t\n") != NULL){
+            printf_line_error(line, "more than one arguement was given to .entry instruction.");
             return false;
         }
 
-        if(!is_valid_label_name(token)){
-            printf_line_error(line, "illegal label name.");
+        if(!is_valid_label_name(symbol)){
+            printf_line_error(line, "label name \"%s\" is illegal.", symbol);
             return false;
-        }
-
-        /* if label is already marked as entry, ignore. */
-        if(find_by_types(symbol_table, token, 1, ENTRY_SYMBOL) != NULL){
-            return true;
         }
 
         /* label could not be extern and entry at the same time. */
-        if((entry = find_by_types(symbol_table, token, 1, EXTERNAL_SYMBOL)) != NULL){
-            printf_line_error(line, "The symbol %s can be either external or entry, but not both.", token);
+        if((entry = find_by_types(symbol_table, symbol, 1, EXTERNAL_SYMBOL)) != NULL){
+            printf_line_error(line, "The symbol \"%s\" can be either external or entry, but not both.", symbol);
             return false;
         }
 
-        if((entry = find_by_types(symbol_table, token, 2, CODE_SYMBOL, DATA_SYMBOL)) == NULL){
-            printf_line_error(line, "The symbol %s for .entry is undefined.", token);
+        /* check if label name is a defined macro name. */
+        if(bst_search(macro_bst, symbol) != NULL){
+            printf_line_error(line, "label name \"%s\" is a defined macro name.", symbol);
             return false;
         }
 
-        add_table_item(symbol_table, token, entry->value, ENTRY_SYMBOL); /* add the entry instruction into the table. */
+        if((entry = find_by_types(symbol_table, symbol, 2, CODE_SYMBOL, DATA_SYMBOL)) == NULL){
+            printf_line_error(line, "The symbol %s for .entry is undefined.", symbol);
+            return false;
+        }
+
+
+        /* if label is already marked as entry, ignore. */
+        if(find_by_types(symbol_table, symbol, 1, ENTRY_SYMBOL) != NULL){
+            return true;
+        }
+
+        add_table_item(symbol_table, symbol, entry->value, ENTRY_SYMBOL); /* add the entry instruction into the table. */
 
         return true;
     }

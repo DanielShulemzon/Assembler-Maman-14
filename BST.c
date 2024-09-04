@@ -65,6 +65,9 @@ Node* bst_insert(BST *bst, const char *name) {
 /* Function to search for a node in the BST */
 Node* bst_search(BST *bst, const char *name) {
     Node *current = bst->root;
+    
+    if(name == NULL) return NULL;
+
     while (current != NULL) {
         int cmp = strcmp(name, current->name);
         if (cmp < 0) {

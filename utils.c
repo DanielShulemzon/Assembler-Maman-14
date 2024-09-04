@@ -95,13 +95,14 @@ static bool is_alphanumeric(const char *word){
 }
 
 
-bool is_reserved_word(const char *name){
+bool is_reserved_word(const char *word){
+	instruction inst;
 
-	return get_opcode_by_name(name) != NONE_OP &&
-			get_register_by_name(name) != NONE_REG &&
-			get_instruction_from_word(name) != NONE_INST &&
-			strcmp(name, "macro") != 0 &&
-			strcmp(name, "endmacr") != 0;
+	return get_opcode_by_name(word) != NONE_OP || /* if it's an opcode */
+			get_register_by_name(word) != NONE_REG || /* if it's a register */
+			(((inst = get_instruction_from_word(word)) != NONE_INST) && (inst != ERROR_INST)) || /* if it's a legal instruction*/
+			strcmp(word, "macro") == 0 ||
+			strcmp(word, "endmacr") == 0;
 			
 }
 

@@ -1,0 +1,10 @@
+Error In spass_errors.am:9: The symbol "EXTERNLABEL" can be either external or entry, but not both.
+Error In spass_errors.am:11: No arguements were given to .entry instruction. 
+Error In spass_errors.am:12: The symbol SOMEUNKNOWNLABEL for .entry is undefined.
+Error In spass_errors.am:15: The symbol MYDATA0 for .entry is undefined.
+Error In spass_errors.am:16: label name "0MYDATA" is illegal.
+Error In spass_errors.am:17: label name "0MYSTRING" is illegal.
+Error In spass_errors.am:18: label name "0" is illegal.
+Error In spass_errors.am:19: The symbol NULL for .entry is undefined.
+Error In spass_errors.am:20: the symbol NOTFOUNDLABEL is not found
+Warning at spass_errors.am:10: label defined with .entry instruction is meaningless.

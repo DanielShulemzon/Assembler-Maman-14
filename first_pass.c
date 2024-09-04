@@ -57,7 +57,7 @@ static reg get_register_by_addr(const char *operand, addressing_type addressing)
 
 
 
-bool fpass_process_line(line_info line, machine_word **code_img, long *data_img, long *ic, long *dc, table *symbol_table){
+bool fpass_process_line(line_info line, machine_word **code_img, long *data_img, long *ic, long *dc, table *symbol_table, BST *macro_bst){
     bool label_found = false;
     int length;
     char symbol[MAX_LINE_LENGTH] = {0}, tokenized_line[MAX_LINE_LENGTH + 2], *first_word, *token;
@@ -85,13 +85,18 @@ bool fpass_process_line(line_info line, machine_word **code_img, long *data_img,
             printf_line_error(line, "label name \"%s\" is illegal.", symbol);
             return false;
         }
-        first_word = strtok(NULL, " \t\n"); /* make first_word the first word after the label. */
-        
+
         if(find_by_types(symbol_table, symbol, 3, CODE_SYMBOL, DATA_SYMBOL, EXTERNAL_SYMBOL)){
-            printf_line_error(line, "label name already exists.");
+            printf_line_error(line, "label name \"%s\" already exists.", symbol);
             return false;
         } 
 
+        if(bst_search(macro_bst, symbol) != NULL){ /* check if label name is a defined macro name. */
+            printf_line_error(line, "label name \"%s\" is an already defined macro name.", symbol);
+            return false;
+        }
+        first_word = strtok(NULL, " \t\n"); /* make first_word the first word after the label. */
+        
         label_found = true;
     }
 
@@ -114,8 +119,15 @@ bool fpass_process_line(line_info line, machine_word **code_img, long *data_img,
         }
         if(inst == EXTERN_INST){
             token = strtok(NULL, " \t\n");
+            if(token == NULL){
+                printf_line_error(line, "No arguements were given to .extern instruction. ");
+                return false;
+            }
             strcpy(symbol, token); /* get label name provided */
 
+            if(strtok(NULL, " \t\n") != NULL){
+                printf_line_error(line, "more than one arguement was given to .extern instruction.");
+            }
             if(!is_valid_label_name(symbol)){
                 printf_line_error(line, "label name %s is illegal.", symbol);
                 return false;
@@ -124,8 +136,9 @@ bool fpass_process_line(line_info line, machine_word **code_img, long *data_img,
                 printf_line_error(line, "label name already exists.");
                 return false;
             }
-            if(strtok(NULL, " \t\n") != NULL){
-                printf_line_error(line, "more than one arguement was given to .extern instruction.");
+            if(bst_search(macro_bst, symbol) != NULL){ /* check if label name is a defined macro name. */
+                printf_line_error(line, "label name \"%s\" is an already defined macro name.", symbol);
+                return false;
             }
 
             add_table_item(symbol_table, symbol, 0, EXTERNAL_SYMBOL); /* Extern value is defaulted to 0 */

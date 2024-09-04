@@ -45,6 +45,8 @@ static bool process_file(char *filename){
     machine_word *code_img[CODE_ARR_IMG_LENGTH];
     long data_img[CODE_ARR_IMG_LENGTH];
     table *symbol_table; /* table that contains all labels and their types*/
+    BST *macro_bst; /* Binary seach tree that contains all macros. */
+
 
     
     /* get the source file name and open the file.*/
@@ -65,17 +67,17 @@ static bool process_file(char *filename){
         return false;
     }
 
-
+    macro_bst = create_bst(); /* initiate the binary search tree.*/
     /* initiating pre-assembler. */
-    pre_assembler_succeeded = initiate_pre_assembler(input_file, target, input_file_name);
+    pre_assembler_succeeded = initiate_pre_assembler(input_file, target, input_file_name, macro_bst);
     if(!pre_assembler_succeeded){
         if (remove(target_name) != 0) { /* if pre-assembler failed we delete the .am file.*/
             perror("Error deleting file");
-        return false;
         }
+        return false;
     }
     free(input_file_name);
-    fclose(input_file); /* we close the input file because from now on we will use the target file* /
+    fclose(input_file); /* we close the input file because from now on we will use the target file */
 
     rewind(target); /* start file from the beginning after pre_assembler. */
     
@@ -96,7 +98,7 @@ static bool process_file(char *filename){
         }
         else{
             /* will be true only if each line was processed successfuly. */
-            is_success &= fpass_process_line(curr_line_info, code_img, data_img, &ic, &dc, symbol_table); 
+            is_success &= fpass_process_line(curr_line_info, code_img, data_img, &ic, &dc, symbol_table, macro_bst); 
         }
     }
 
@@ -117,7 +119,7 @@ static bool process_file(char *filename){
 
         /* loops through all the lines again and updates the code image.*/
         for(curr_line_info.line_number = 1; fgets(temp_line, MAX_LINE_LENGTH + 2, target) != NULL; curr_line_info.line_number++){
-            is_success &= spass_process_line(curr_line_info, code_img, &ic, symbol_table);
+            is_success &= spass_process_line(curr_line_info, code_img, &ic, symbol_table, macro_bst);
         }
 
         /* if second pass ran successfuly we write the .ob, .ent, .ext files. */
@@ -132,6 +134,8 @@ static bool process_file(char *filename){
     fclose(target);
 
     free_table(symbol_table);
+
+    free_bst(macro_bst);
 
     free_code_image(code_img, ic_final);
     

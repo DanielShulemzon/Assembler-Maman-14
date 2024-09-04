@@ -105,7 +105,7 @@ bool handle_string_instruction(line_info line, long *dc, long *data_img){
     index++;
 
     while((temp_c = arg[index]) != '\"'){
-        if(!temp_c || temp_c == ' ' || temp_c == '\n'){
+        if(!temp_c || temp_c == '\n' || temp_c == EOF){
             printf_line_error(line, "missing ending quote.");
             return false;
         }
