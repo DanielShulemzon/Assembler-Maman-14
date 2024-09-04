@@ -1,7 +1,7 @@
 # AssemblerMmn14
 maman 14 assembler ( ͡° ͜ʖ ͡°)
 
-if you see this you're probably a great guy.
+if you see this you're awesome.
 
 this code is a mess so if you have any questions/comments feel free to ask.
 
