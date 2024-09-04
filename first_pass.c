@@ -7,15 +7,57 @@
 #include "instructions.h"
 #include "code.h"
 
+/*
+ *  Handles a line of code, updating the instruction counter and code image.
+ *  @param line - Information about the current line.
+ *  @param ic - the current ic.
+ *  @param code_img - Pointer to the code image array.
+ *  @param label_found - Indicates if a label was found on the line.
+ *  @return - True if the line was handled successfully, false otherwise.
+ */
 static bool handle_code_line(line_info line, long *ic, machine_word **code_img, bool label_found);
+
+/*
+ *  Builds extra codewords for operands.
+ *  @param line - Information about the current line.
+ *  @param code_img - Pointer to the code image array.
+ *  @param ic - the current ic.
+ *  @param operands - 2d array which contains the operands in the line.
+ *  @param op_count - Number of operands.
+ */
 static void fpass_build_extra_codewords(line_info line, machine_word **code_img, long *ic, char operands[2][MAX_LINE_LENGTH], int op_count);
+
+/*
+ *  Builds a code word from a destination operand.
+ *  @param line - Information about the current line.
+ *  @param code_img - Pointer to the code image array.
+ *  @param ic - the current ic.
+ *  @param operand - The destination operand string.
+ *  @param addr - The addressing type of the operand.
+ */
 static void fpass_build_word_from_dest_operand(line_info line, machine_word **code_img, long *ic, char *operand, addressing_type addr);
-static void fpass_build_word_from_src_operand(line_info line, machine_word **code_img, long *ic, char *operand, addressing_type addr);\
+
+/*
+ *  Builds a code word from a source operand.
+ *  @param line - Information about the current line.
+ *  @param code_img - Pointer to the code image array.
+ *  @param ic - the current ic.
+ *  @param operand - The source operand string.
+ *  @param addr - The addressing type of the operand.
+ */
+static void fpass_build_word_from_src_operand(line_info line, machine_word **code_img, long *ic, char *operand, addressing_type addr);
+
+/*
+ *  Extracts register from operand based on it's addressing type.
+ *  @param operand - The operand string.
+ *  @param addressing - The addressing type of the operand.
+ *  @return - The register corresponding to the operand and addressing type.
+ */
 static reg get_register_by_addr(const char *operand, addressing_type addressing);
 
 
 
-bool fpass_process_line(line_info line, machine_word **code_img, long *data_img, long *ic, long *dc, table *symbol_table){
+bool fpass_process_line(line_info line, machine_word **code_img, long *data_img, long *ic, long *dc, table *symbol_table, BST *macro_bst){
     bool label_found = false;
     int length;
     char symbol[MAX_LINE_LENGTH] = {0}, tokenized_line[MAX_LINE_LENGTH + 2], *first_word, *token;
@@ -31,7 +73,6 @@ bool fpass_process_line(line_info line, machine_word **code_img, long *data_img,
     }
 
     /* check if label */
-
     length = strlen(first_word);
     if(length > 0 && first_word[length-1] == ':'){
         /* possible label found! */
@@ -44,24 +85,29 @@ bool fpass_process_line(line_info line, machine_word **code_img, long *data_img,
             printf_line_error(line, "label name \"%s\" is illegal.", symbol);
             return false;
         }
-        first_word = strtok(NULL, " \t\n");
-        
+
         if(find_by_types(symbol_table, symbol, 3, CODE_SYMBOL, DATA_SYMBOL, EXTERNAL_SYMBOL)){
-            printf_line_error(line, "label name already exists.");
+            printf_line_error(line, "label name \"%s\" already exists.", symbol);
             return false;
         } 
 
+        if(bst_search(macro_bst, symbol) != NULL){ /* check if label name is a defined macro name. */
+            printf_line_error(line, "label name \"%s\" is an already defined macro name.", symbol);
+            return false;
+        }
+        first_word = strtok(NULL, " \t\n"); /* make first_word the first word after the label. */
+        
         label_found = true;
     }
 
 
-    inst = get_instruction_from_word(first_word);
-    if(inst == ERROR_INST){
+    inst = get_instruction_from_word(first_word); /* get the instruction type of the line (NONE_INST if it's code.) */
+    if(inst == ERROR_INST){ /* if word starts with a dot but is not a legal instruction. */
         printf_line_error(line, "instruction %s is illegal.", first_word);
         return false;
     }
 
-    if(inst != NONE_INST){
+    if(inst != NONE_INST){ /* if instruction*/
         if(label_found && (inst == DATA_INST || inst == STRING_INST)){
             add_table_item(symbol_table, symbol, *dc, DATA_SYMBOL);
         }
@@ -73,8 +119,15 @@ bool fpass_process_line(line_info line, machine_word **code_img, long *data_img,
         }
         if(inst == EXTERN_INST){
             token = strtok(NULL, " \t\n");
-            strcpy(symbol, token);
+            if(token == NULL){
+                printf_line_error(line, "No arguements were given to .extern instruction. ");
+                return false;
+            }
+            strcpy(symbol, token); /* get label name provided */
 
+            if(strtok(NULL, " \t\n") != NULL){
+                printf_line_error(line, "more than one arguement was given to .extern instruction.");
+            }
             if(!is_valid_label_name(symbol)){
                 printf_line_error(line, "label name %s is illegal.", symbol);
                 return false;
@@ -83,8 +136,9 @@ bool fpass_process_line(line_info line, machine_word **code_img, long *data_img,
                 printf_line_error(line, "label name already exists.");
                 return false;
             }
-            if(strtok(NULL, " \t\n") != NULL){
-                printf_line_error(line, "more than one arguement was given to .extern instruction.");
+            if(bst_search(macro_bst, symbol) != NULL){ /* check if label name is a defined macro name. */
+                printf_line_error(line, "label name \"%s\" is an already defined macro name.", symbol);
+                return false;
             }
 
             add_table_item(symbol_table, symbol, 0, EXTERNAL_SYMBOL); /* Extern value is defaulted to 0 */
@@ -133,11 +187,11 @@ static bool handle_code_line(line_info line, long *ic, machine_word **code_img, 
         return false;
     }
 
-    if(!extract_operands(line, index, &op_count, operands)){
+    if(!extract_operands(line, index, &op_count, operands)){ /* fill the operands 2d array.*/
         return false;
     }
 
-    if ((codeword = get_code_word(line, curr_opcode, op_count, operands)) == NULL) {
+    if ((codeword = get_code_word(line, curr_opcode, op_count, operands)) == NULL) { /* get the code word of the operand.*/
 		return false;
 	}
 
@@ -149,13 +203,13 @@ static bool handle_code_line(line_info line, long *ic, machine_word **code_img, 
     word_to_write->type = CODE_UNION_TYPE;
 	code_img[(*ic) - IC_INIT_VALUE] = word_to_write;
 
-    if (op_count) { /* If there's at least 1 operand */
+    if(op_count){ /* If there's at least 1 operand */
 		fpass_build_extra_codewords(line, code_img, ic, operands, op_count);
 	}
 
     (*ic)++;
 
-    code_img[ic_before - IC_INIT_VALUE]->length = (*ic) - ic_before;
+    code_img[ic_before - IC_INIT_VALUE]->length = (*ic) - ic_before; /* calculate L and update the length. */
 
 	return true; /* line_valid is initiallized to true but if any operand is illegal it would be false. */
 }
@@ -166,6 +220,8 @@ static void fpass_build_extra_codewords(line_info line, machine_word **code_img,
     addressing_type dest_addressing = NONE_ADDR, src_addressing = NONE_ADDR;
     reg src_reg, dest_reg;
 
+    /*if the opcode recieves two operands, the first operand will be source operand and the second will be destination operand. 
+        but if the opcode recieves one operand it will only be destination operand. */
     if(op_count == 1){
         dest_addressing = get_addressing_type(operands[0]);
     }
@@ -197,8 +253,7 @@ static void fpass_build_extra_codewords(line_info line, machine_word **code_img,
 
     (*ic)++;
 
-    /*if the opcode recieves two operands, the first operand will be source operand and the second will be destination operand. 
-        but if the opcode recieves one operand it will only be destination operand. */
+    /* first operand type is determined by the number of operands. */
     if(op_count == 2)
         fpass_build_word_from_src_operand(line, code_img, ic, operands[0], src_addressing);
     else
@@ -272,5 +327,6 @@ static void fpass_build_word_from_src_operand(line_info line, machine_word **cod
 }
 
 static reg get_register_by_addr(const char *operand, addressing_type addressing) {
+    /* if register starts with '*', we skip it. */
     return addressing == INDIRECT_REGISTER_ADDR ? get_register_by_name(operand + 1) : get_register_by_name(operand);
 }

@@ -2,7 +2,8 @@
     "files.associations": {
         "utils.h": "c",
         "typeinfo": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "string": "c"
     },
     "C_Cpp.errorSquiggles": "enabled",
     "makefile.configureOnOpen": false

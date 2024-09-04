@@ -1,0 +1,5 @@
+Error In pre_assembler_errors.as:10: Pre-assembler Error: macro name already exists.
+Error In pre_assembler_errors.as:13: Pre-assembler Error: endmacr does not take operands.
+Error In pre_assembler_errors.as:16: Pre-assembler Error: macro name can not be a reserved keyword.
+Error In pre_assembler_errors.as:21: Pre-assembler Error: macro name wasn't specified.
+Error In pre_assembler_errors.as:26: Pre-assembler Error: macro name can only be one word.

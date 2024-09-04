@@ -26,14 +26,15 @@ bool handle_data_instruction(line_info line, long *dc, long *data_img){
     long current_data_value;
     int i, index = 0;
 
+    /* skip to the first word after the .data instruction*/
     parameters = strstr(line.content, ".data");
     if(parameters == NULL){
         printf_line_error(line, ".data not found although entered function.");
         exit(1);
     }
     parameters += strlen(".data");
-
     SKIP_WHITE_SPACES(parameters, index);
+
     if(parameters[index] == ','){
         printf_line_error(line, "unexpected comma after .data instruction.");
         return false;
@@ -54,6 +55,7 @@ bool handle_data_instruction(line_info line, long *dc, long *data_img){
 
         current_data_value = strtol(temp_data, &temp_ptr, 10);
 
+        /* update the data image and increment the dc. */
         data_img[*dc] = current_data_value;
         (*dc)++;
 
@@ -87,14 +89,15 @@ bool handle_string_instruction(line_info line, long *dc, long *data_img){
     char *arg, temp_c;
     int index = 0;
 
+    /* skip to the first word after the .data instruction*/
     arg = strstr(line.content, ".string");
     if(arg == NULL){
         printf_line_error(line, ".string not found.");
         return false;
     }
     arg += strlen(".string");
-
     SKIP_WHITE_SPACES(arg, index);
+
     if(arg[index] != '\"'){
         printf_line_error(line, "missing opening quote.");
         return false;
@@ -102,16 +105,18 @@ bool handle_string_instruction(line_info line, long *dc, long *data_img){
     index++;
 
     while((temp_c = arg[index]) != '\"'){
-        if(!temp_c || temp_c == ' ' || temp_c == '\n'){
+        if(!temp_c || temp_c == '\n' || temp_c == EOF){
             printf_line_error(line, "missing ending quote.");
             return false;
         }
 
+        /* update the data image and increment the dc. */
         data_img[*dc] = temp_c;
         (*dc)++;
 
         index++;
     }
+
     /* add \0 a the end of the string */
     data_img[*dc] = 0;
     (*dc)++;

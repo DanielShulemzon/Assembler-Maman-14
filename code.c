@@ -6,13 +6,30 @@
 #include "utils.h"
 
 
+/*
+ *  Validates an opcode against the provided source and destination operands.
+ *  @param line - Information about the current line.
+ *  @param curr_opcode - The opcode to validate.
+ *  @param src_addressing - Addressing type of the source operand.
+ *  @param dest_addressing - Addressing type of the destination operand.
+ *  @param op_count - Number of operands.
+ *  @return - True if the opcode is valid with the given operands, false otherwise.
+ */
 static bool validate_opcode_with_operands(line_info line, opcode curr_opcode, addressing_type src_addressing,
-                                                 addressing_type dest_addressing, int op_count);
+                                          addressing_type dest_addressing, int op_count);
+
+/*
+ *  Retrieves the legal addressing types for a given opcode.
+ *  @param curr_opcode - The opcode to check.
+ *  @param legal_src_addr_types - Array to store valid source addressing types.
+ *  @param legal_dest_addr_types - Array to store valid destination addressing types.
+ */
 static void get_available_addressing_types(opcode curr_opcode, bool *legal_src_addr_types, bool *legal_dest_addr_types);
 
+
 typedef struct cmd_element {
-    char *cmd;
-    opcode op;
+    char *cmd; /* name of the opcode. */
+    opcode op; /* the corresponding enum for the opcode. */
 }cmd_element;
 
 static cmd_element cmd_lookup_table[] = {
@@ -38,7 +55,12 @@ static cmd_element cmd_lookup_table[] = {
 
 opcode get_opcode_by_name(const char *name){
     cmd_element *e;
+    
+    if (name == NULL) {
+        return NONE_OP;  /* Handle the case where name is NULL */
+    }
 
+    /* loops through the lookup table and searches for the opreand. if found, returns the corresponding enum. */
     for(e = cmd_lookup_table; e->cmd != NULL; e++){
         if(strcmp(name, e->cmd) == 0) return e->op;
     }
@@ -61,7 +83,7 @@ bool extract_operands(line_info line, int index, int *operand_count, char operan
     char temp_operand[MAX_LINE_LENGTH];
     int i;
 
-    (*operand_count) = 0;
+    (*operand_count) = 0; /* initiate to 0.*/
 
     SKIP_WHITE_SPACES(line.content, index);
     if(line.content[index] == ','){
@@ -70,20 +92,22 @@ bool extract_operands(line_info line, int index, int *operand_count, char operan
     }
 
     while(line.content[index] != '\n' && line.content[index] != EOF){
+        /* if found already 2 operands (which means we found now three) the operands are illegal. */
         if((*operand_count) == 2){
             printf_line_error(line, "more than 2 arguements given to opcode.");
             return false;
         }
 
-
+        /* copy the next word into the temp_operand*/
         for (i = 0;
 		      line.content[index] && !isspace(line.content[index]) &&
                line.content[index] != ',' ; index++, i++) {
 			temp_operand[i] = line.content[index];
-		}
+		} 
         temp_operand[i] = '\0';
         
-        strcpy(operands[(*operand_count)], temp_operand);
+        /* copy the temp_operand into its correct place in the operands array.*/
+        strcpy(operands[(*operand_count)], temp_operand); 
         
         SKIP_WHITE_SPACES(line.content, index);
         if(!line.content[index] || line.content[index] == '\n' || line.content[index] == EOF){
@@ -102,7 +126,8 @@ bool extract_operands(line_info line, int index, int *operand_count, char operan
                 printf_line_error(line, "line could not end with a comma.");
                 return false;
             }
-
+            
+            /* add 1 to the operand count and continue if found a comma and another character following the comma. */
             (*operand_count)++;
             continue;
         }
@@ -115,6 +140,7 @@ bool extract_operands(line_info line, int index, int *operand_count, char operan
 }
 
 addressing_type get_addressing_type(char *operand) {
+    /* get addressing type of operand. */
     if (operand[0] == '#' && is_valid_data_parameter(operand + 1)) return IMMEDIATE_ADDR;
 
     if (operand[0] == '*' && get_register_by_name(operand + 1) != NONE_REG) return INDIRECT_REGISTER_ADDR;
@@ -130,6 +156,8 @@ code_word *get_code_word(line_info line, opcode curr_opcode, int op_count, char 
     code_word *codeword;
     addressing_type dest_addressing = NONE_ADDR, src_addressing = NONE_ADDR;
 
+    /*if the opcode recieves two operands, the first operand will be source operand and the second will be destination operand. 
+        but if the opcode recieves one operand it will only be destination operand. */
     if(op_count == 1){
         dest_addressing = get_addressing_type(operands[0]);
     }
@@ -147,7 +175,7 @@ code_word *get_code_word(line_info line, opcode curr_opcode, int op_count, char 
     codeword->opcode = curr_opcode;
     codeword->ARE = (1 << 2); /* A = 1, R = 0, E = 0 for each codeword. */
 
-    codeword->dest_addressing = codeword->src_addressing = 0;
+    codeword->dest_addressing = codeword->src_addressing = 0; /* initiate to 0.*/
     if (curr_opcode >= MOV_OP && curr_opcode <= LEA_OP){
         codeword->src_addressing = (1 << src_addressing); /* for example: DIRECT_ADDR is 1, and 0001 << 1 will give us 0010. */
         codeword->dest_addressing = (1 << dest_addressing);
@@ -162,9 +190,11 @@ code_word *get_code_word(line_info line, opcode curr_opcode, int op_count, char 
 
 static bool validate_opcode_with_operands(line_info line, opcode curr_opcode, addressing_type src_addressing,
                                                          addressing_type dest_addressing, int op_count){
-    bool legal_src_addr_types[4] = {false}, legal_dest_addr_types[4] = {false};
+    /* the two bool arrays contain true if addressing type is legal. 0 - IMMEDIATE_ADDR, 1 - DIRECT_ADDR, etc...*/
+    bool legal_src_addr_types[4] = {false}, legal_dest_addr_types[4] = {false}; 
     
-    get_available_addressing_types(curr_opcode, legal_src_addr_types, legal_dest_addr_types);
+    /* update the arrays by operand.*/
+    get_available_addressing_types(curr_opcode, legal_src_addr_types, legal_dest_addr_types); 
 
     if(curr_opcode >= MOV_OP && curr_opcode <= LEA_OP){
         /* 2 operands required. */
@@ -190,7 +220,7 @@ static bool validate_opcode_with_operands(line_info line, opcode curr_opcode, ad
         }
         return true;
     }
-    if(curr_opcode >= CLR_OP && curr_opcode <= PRN_OP){
+    if(curr_opcode >= CLR_OP && curr_opcode <= JSR_OP){
         /* 1 operand required. */
         if(op_count != 1){
             printf_line_error(line, "illegal number of operands given to opcode. required: 1. found: %d", op_count);
