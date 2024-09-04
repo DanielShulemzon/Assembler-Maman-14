@@ -4,8 +4,6 @@
 
 #define MAX_LINE_LENGTH 80
 
-#define BUFFER_SIZE 256
-
 #define IC_INIT_VALUE 100
 
 #define CODE_ARR_IMG_LENGTH 1200
