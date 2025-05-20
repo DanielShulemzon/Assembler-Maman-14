@@ -1,13 +1,13 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
 #include "table.h"
 #include "utils.h"
-
+#include <stdarg.h>
+#include <stdio.h>
+#include <string.h>
 
 /* Function to create a new table with a given initial capacity */
-table* create_table(size_t initial_capacity) {
-    table *tab = (table*)malloc_with_check(sizeof(table));
+table* create_table(size_t initial_capacity)
+{
+    table* tab = (table*)malloc_with_check(sizeof(table));
 
     tab->entries = (table_entry*)malloc_with_check(initial_capacity * sizeof(table_entry));
 
@@ -17,7 +17,8 @@ table* create_table(size_t initial_capacity) {
 }
 
 /* Function to add an entry to the table */
-void add_table_item(table *tab, const char *key, long value, symbol_type type) {
+void add_table_item(table* tab, const char* key, long value, symbol_type type)
+{
     /* Resize the table if necessary */
     if (tab->size == tab->capacity) {
         tab->capacity *= 2;
@@ -38,10 +39,11 @@ void add_table_item(table *tab, const char *key, long value, symbol_type type) {
 
 /* Function to find an entry in the table by key */
 
-table_entry *find_by_types(table *tab, const char *key, int symbol_count, ...) {
+table_entry* find_by_types(table* tab, const char* key, int symbol_count, ...)
+{
     int i, j;
     va_list arglist;
-    symbol_type *valid_symbol_types;
+    symbol_type* valid_symbol_types;
 
     if (tab == NULL || key == NULL || symbol_count <= 0) {
         return NULL; /* Return NULL if table, key is NULL, or symbol_count is invalid */
@@ -62,10 +64,9 @@ table_entry *find_by_types(table *tab, const char *key, int symbol_count, ...) {
     /* Iterate over the table entries */
     for (i = 0; i < tab->size; i++) {
         for (j = 0; j < symbol_count; j++) {
-            if (tab->entries[i].key != NULL && strcmp(tab->entries[i].key, key) == 0 &&
-                tab->entries[i].type == valid_symbol_types[j]) {
+            if (tab->entries[i].key != NULL && strcmp(tab->entries[i].key, key) == 0 && tab->entries[i].type == valid_symbol_types[j]) {
                 free(valid_symbol_types); /* Free allocated memory */
-                return &tab->entries[i];  /* Return the matching entry */
+                return &tab->entries[i]; /* Return the matching entry */
             }
         }
     }
@@ -75,7 +76,8 @@ table_entry *find_by_types(table *tab, const char *key, int symbol_count, ...) {
 }
 
 /* Function to free all memory associated with the table */
-void free_table(table *tab) {
+void free_table(table* tab)
+{
     int i;
     for (i = 0; i < tab->size; i++) {
         free(tab->entries[i].key); /* Free each key string */
@@ -84,10 +86,11 @@ void free_table(table *tab) {
     free(tab); /* Free the table structure itself */
 }
 
-
-void add_value_to_symbol_type(table *tab, long add_value, symbol_type type) {
+void add_value_to_symbol_type(table* tab, long add_value, symbol_type type)
+{
     int i;
-    if (tab == NULL) return;
+    if (tab == NULL)
+        return;
 
     for (i = 0; i < tab->size; i++) {
         if (tab->entries[i].type == type) {
@@ -96,9 +99,10 @@ void add_value_to_symbol_type(table *tab, long add_value, symbol_type type) {
     }
 }
 
-table *filter_table_by_type(table *tab, symbol_type type) {
+table* filter_table_by_type(table* tab, symbol_type type)
+{
     int i;
-    table *filtered_table;
+    table* filtered_table;
 
     if (tab == NULL) {
         return NULL; /* Return NULL if table is NULL */

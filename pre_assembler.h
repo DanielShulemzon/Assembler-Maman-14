@@ -2,9 +2,9 @@
 #ifndef _PRE_ASSEMBLER_H
 #define _PRE_ASSEMBLER_H
 
-#include <stdio.h>
-#include "globals.h"
 #include "BST.h"
+#include "globals.h"
+#include <stdio.h>
 
 /*
  *  Processes a file, looks for macros and extract them.
@@ -13,6 +13,6 @@
  *  @param filename - original filename for debugging.
  *  @param macro_bst - binary search tree for macros.
  */
-bool initiate_pre_assembler(FILE *input_file, FILE *output_file, char *filename, BST *macro_bst);
+bool initiate_pre_assembler(FILE* input_file, FILE* output_file, char* filename, BST* macro_bst);
 
 #endif

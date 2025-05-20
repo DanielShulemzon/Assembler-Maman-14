@@ -10,7 +10,6 @@
 
 #define KEEP_ONLY_12_LSB(value) ((value) & 0xFFF)
 
-
 /*
  *  Prints the result files of the assembler.
  *  @param code_img - the code image which contains our code segment.
@@ -21,7 +20,7 @@
  *  @param symbol_table - the table that contains our symbols and their value and types.
  *  @return - Whether succeeded.
  */
-bool write_output_files(machine_word **code_img, long *data_img, long ic_final, long dc_final, char *filename,
-                       table *symbol_table);
+bool write_output_files(machine_word** code_img, long* data_img, long ic_final, long dc_final, char* filename,
+    table* symbol_table);
 
 #endif
